@@ -2,7 +2,7 @@
 using static SDL2.SDL;
 using static SDL2.SDL_ttf;
 
-namespace SneakerSim
+namespace CopDrop
 {
     class Program
     {
@@ -28,6 +28,41 @@ namespace SneakerSim
 
 
             Texture[] floorTexture = new Texture[9];
+            Texture[] wallRight = new Texture[2];
+            for (int i = 0; i < wallRight.Length; i++)
+            {
+                if (i == 0)
+                {
+                    wallRight[i] = new Texture(renderer, SDL_image.IMG_Load("WallR128x128.png"), 128, 128, 0, pt);
+                    wallRight[i].transform.x = 511;
+                    wallRight[i].transform.y = 140;
+                }
+                else
+                {
+                    wallRight[i] = new Texture(renderer, SDL_image.IMG_Load("WallR128x128.png"), 64, 163, 0, pt);
+                    wallRight[i].transform.x = 511 + (128) * i;
+                    wallRight[i].transform.y = 140;
+                }
+
+            }
+            Texture[] wallLeft = new Texture[2];
+            for (int i = 0; i < wallLeft.Length; i++)
+            {
+                if (i == 0)
+                {
+                    wallLeft[i] = new Texture(renderer, SDL_image.IMG_Load("WallL128x128.png"), 128, 128, 0, pt);
+                    wallLeft[i].transform.x = 383;
+                    wallLeft[i].transform.y = 140;
+                }
+                else
+                {
+                    wallLeft[i] = new Texture(renderer, SDL_image.IMG_Load("WallL128x128.png"), 64, 163, 0, pt);
+                    wallLeft[i].transform.x = 383 - (64) * i;
+                    wallLeft[i].transform.y = 140;
+                }
+
+            }
+
             for (int i = 0; i < floorTexture.Length; i++)
             {
                 floorTexture[i] = new Texture(renderer, SDL_image.IMG_Load("wood_128x64.png"), 128, 64, 0, pt);
@@ -111,8 +146,23 @@ namespace SneakerSim
                 Console.WriteLine("x is" + mouseX + " y is" + mouseY);
 
 
-                SDL_SetRenderDrawColor(renderer, 83, 104, 120, 255);
+                SDL_SetRenderDrawColor(renderer, 204, 255, 255, 255);
                 SDL_RenderClear(renderer);
+
+                for (int i = 0; i < wallLeft.Length; i++)
+                {
+                    SDL_SetRenderTarget(renderer, wallLeft[i].texture);
+                    SDL_SetRenderDrawColor(renderer, 112, 128, 144, 255);
+                    wallLeft[i].show();
+                }
+                for (int i = 0; i < wallRight.Length; i++)
+                {
+                    SDL_SetRenderTarget(renderer, wallRight[i].texture);
+                    SDL_SetRenderDrawColor(renderer, 112, 128, 144, 255);
+                    wallRight[i].show();
+
+                }
+                SDL_SetRenderTarget(renderer, IntPtr.Zero);
 
                 for (int i = 0; i < floorTexture.Length; i++)
                 {
@@ -204,7 +254,7 @@ namespace SneakerSim
         public SDL_Rect transform;
         public SDL_Rect transformSurface;
         private IntPtr renderer;
-        private IntPtr texture;
+        public IntPtr texture;
         private int rotation = 0;
         private SDL_Point point;
 
