@@ -23,100 +23,27 @@ namespace CopDrop
 
             SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN, out window, out renderer);
             SDL_Point pt;
-            pt.y = WINDOW_HEIGHT / 2;
-            pt.x = WINDOW_WIDTH / 2;
+            pt.y = 96 / 2;
+            pt.x = 143 / 2;
 
 
-            Texture[] floorTexture = new Texture[9];
-            Texture[] wallRight = new Texture[2];
-            for (int i = 0; i < wallRight.Length; i++)
+            Texture[] wallFront = new Texture[3];
+            for (int i = 0; i < wallFront.Length; i++)
             {
-                if (i == 0)
+                wallFront[i] = new Texture(renderer, SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_builder_free_48x48.png"), 143, 96, 0, pt);
+                wallFront[i].transformSurface.x = 0;
+                wallFront[i].transformSurface.y = 239;
+                wallFront[i].transform.y = 150;
+
+                if (i != 0)
                 {
-                    wallRight[i] = new Texture(renderer, SDL_image.IMG_Load("WallR128x128.png"), 128, 128, 0, pt);
-                    wallRight[i].transform.x = 511;
-                    wallRight[i].transform.y = 140;
+
+                    wallFront[i].transform.x = (WINDOW_WIDTH / 2 - 143 * 2 + 143 / 2) + (143 * i);
                 }
                 else
                 {
-                    wallRight[i] = new Texture(renderer, SDL_image.IMG_Load("WallR128x128.png"), 64, 163, 0, pt);
-                    wallRight[i].transform.x = 511 + (128) * i;
-                    wallRight[i].transform.y = 140;
+                    wallFront[i].transform.x = WINDOW_WIDTH / 2 - 143 * 2 + 143 / 2;
                 }
-
-            }
-            Texture[] wallLeft = new Texture[2];
-            for (int i = 0; i < wallLeft.Length; i++)
-            {
-                if (i == 0)
-                {
-                    wallLeft[i] = new Texture(renderer, SDL_image.IMG_Load("WallL128x128.png"), 128, 128, 0, pt);
-                    wallLeft[i].transform.x = 383;
-                    wallLeft[i].transform.y = 140;
-                }
-                else
-                {
-                    wallLeft[i] = new Texture(renderer, SDL_image.IMG_Load("WallL128x128.png"), 64, 163, 0, pt);
-                    wallLeft[i].transform.x = 383 - (64) * i;
-                    wallLeft[i].transform.y = 140;
-                }
-
-            }
-
-            for (int i = 0; i < floorTexture.Length; i++)
-            {
-                floorTexture[i] = new Texture(renderer, SDL_image.IMG_Load("wood_128x64.png"), 128, 64, 0, pt);
-                if (i == 0)
-                {
-                    floorTexture[i].transform.x = WINDOW_WIDTH / 2 - floorTexture[i].transform.w;
-                    floorTexture[i].transform.y = WINDOW_HEIGHT / 2 - floorTexture[i].transform.h;
-                }
-                else
-                {
-                    floorTexture[i].transform.x = (WINDOW_WIDTH / 2 - floorTexture[i].transform.w) + 64 * i;
-                    floorTexture[i].transform.y = (WINDOW_HEIGHT / 2 - floorTexture[i].transform.h) + 32 * i;
-                }
-
-                if (i == 3)
-                {
-                    floorTexture[i].transform.x = 448;
-                    floorTexture[i].transform.y = 331;
-
-                }
-                if (i == 4)
-                {
-                    floorTexture[i].transform.x = 384;
-                    floorTexture[i].transform.y = 299;
-
-                }
-                if (i == 5)
-                {
-                    floorTexture[i].transform.x = 320;
-                    floorTexture[i].transform.y = 267;
-
-                }
-
-
-                if (i == 6)
-                {
-                    floorTexture[i].transform.x = 574;
-                    floorTexture[i].transform.y = 269;
-
-                }
-                if (i == 7)
-                {
-                    floorTexture[i].transform.x = 510;
-                    floorTexture[i].transform.y = 237;
-
-                }
-                if (i == 8)
-                {
-                    floorTexture[i].transform.x = 446;
-                    floorTexture[i].transform.y = 205;
-
-                }
-
-
 
             }
 
@@ -149,24 +76,9 @@ namespace CopDrop
                 SDL_SetRenderDrawColor(renderer, 204, 255, 255, 255);
                 SDL_RenderClear(renderer);
 
-                for (int i = 0; i < wallLeft.Length; i++)
+                for (int i = 0; i < wallFront.Length; i++)
                 {
-                    SDL_SetRenderTarget(renderer, wallLeft[i].texture);
-                    SDL_SetRenderDrawColor(renderer, 112, 128, 144, 255);
-                    wallLeft[i].show();
-                }
-                for (int i = 0; i < wallRight.Length; i++)
-                {
-                    SDL_SetRenderTarget(renderer, wallRight[i].texture);
-                    SDL_SetRenderDrawColor(renderer, 112, 128, 144, 255);
-                    wallRight[i].show();
-
-                }
-                SDL_SetRenderTarget(renderer, IntPtr.Zero);
-
-                for (int i = 0; i < floorTexture.Length; i++)
-                {
-                    floorTexture[i].show();
+                    // wallFront[i].show();
                 }
 
 
@@ -255,7 +167,7 @@ namespace CopDrop
         public SDL_Rect transformSurface;
         private IntPtr renderer;
         public IntPtr texture;
-        private int rotation = 0;
+        private double rotation = 0.0;
         private SDL_Point point;
 
         public Texture(IntPtr renderer, IntPtr surface, int textureWidth, int textureHeight, int rotation, SDL_Point point)
@@ -263,7 +175,7 @@ namespace CopDrop
             texture = SDL_CreateTextureFromSurface(renderer, surface);
             this.renderer = renderer;
             SDL_FreeSurface(surface);
-            this.rotation = rotation;
+            this.rotation = (double)rotation;
             this.point = point;
 
             transform.w = textureWidth;
