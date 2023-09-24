@@ -318,45 +318,7 @@ namespace CopDrop
 
             destinationSurface = SDL.SDL_CreateRGBSurface(0, 25, 78, 32, 0, 0, 0, 0);
 
-            // Wall Front
-            sourceRect.x = 555;
-            sourceRect.y = 66;
-            sourceRect.w = 25;
-            sourceRect.h = 78;
 
-            destinationRect.x = 0;
-            destinationRect.y = 0;
-            destinationRect.w = 143;
-            destinationRect.h = 96;
-            // Copies the srf surface on the destination surface 
-
-            SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
-            sourceRect.x = 0;
-            sourceRect.y = 239;
-            sourceRect.w = 143;
-            sourceRect.h = 96;
-
-            destinationRect.x = 143;
-            destinationRect.y = 0;
-            destinationRect.w = 143;
-            destinationRect.h = 96;
-
-            // Copies the srf surface on the destination surface 
-            SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
-
-            sourceRect.x = 0;
-            sourceRect.y = 239;
-            sourceRect.w = 143;
-            sourceRect.h = 96;
-
-            destinationRect.x = 143 * 2;
-            destinationRect.y = 0;
-            destinationRect.w = 143;
-            destinationRect.h = 96;
-
-            SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
-
-            Texture wallBorder = new Texture(renderer, destinationSurface, 143 * 3, 96, 0, pt);
 
             // Creates an array texture named cornerBorder
             Texture[] cornerBorder = new Texture[2];
@@ -383,6 +345,48 @@ namespace CopDrop
 
 
             }
+
+            // Wall border
+            sourceRect.x = 555;
+            sourceRect.y = 66;
+            sourceRect.w = 21;
+            sourceRect.h = 78;
+
+            destinationRect.x = 0;
+            destinationRect.y = 0;
+            destinationRect.w = 21;
+            destinationRect.h = 78;
+            // Copies the srf surface on the destination surface 
+
+            SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
+            sourceRect.x = 555;
+            sourceRect.y = 66;
+            sourceRect.w = 21;
+            sourceRect.h = 78;
+
+            destinationRect.x = 0;
+            destinationRect.y = 78;
+            destinationRect.w = 21;
+            destinationRect.h = 78;
+
+            // Copies the srf surface on the destination surface 
+            SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
+
+            sourceRect.x = 555;
+            sourceRect.y = 66;
+            sourceRect.w = 21;
+            sourceRect.h = 78;
+
+            destinationRect.x = 0;
+            destinationRect.y = 78 * 2;
+            destinationRect.w = 21;
+            destinationRect.h = 78;
+
+            SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
+
+            Texture wallBorder = new Texture(renderer, destinationSurface, 21, 78 * 3, 0, pt);
+            wallBorder.transform.x = cornerBorder[0].transform.x;
+            wallBorder.transform.y = cornerBorder[0].transform.y + cornerBorder[0].transform.h;
 
             SDL_Event ev;
             bool loop = true;
@@ -415,11 +419,13 @@ namespace CopDrop
 
                 // Present/shows the the texture 
 
-                wallFront.show();
                 for (int i = 0; i < cornerBorder.Length; i++)
                 {
                     cornerBorder[i].show();
                 }
+                wallBorder.show();
+                wallFront.show();
+
 
                 SDL_RenderPresent(renderer);
 
