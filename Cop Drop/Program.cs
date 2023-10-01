@@ -22,7 +22,7 @@ namespace CopDrop
         public static int Main()
         {
 
-            int WINDOW_WIDTH = 1024;
+            int WINDOW_WIDTH = 1056;
             int WINDOW_HEIGHT = 600;
 
             SDL_Init(SDL_INIT_VIDEO);
@@ -33,6 +33,9 @@ namespace CopDrop
 
 
             SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN, out window, out renderer);
+            // makes the window color light blue
+            SDL_SetRenderDrawColor(renderer, 204, 255, 255, 255);
+            SDL_RenderClear(renderer);
 
             int mouseX = 0;
             int mouseY = 0;
@@ -45,7 +48,10 @@ namespace CopDrop
             Texture storeBtnTexture = new Texture(renderer, SDL_image.IMG_Load("stockXIcon.png"), 48, 48, 0, pt);
             Button storeBtn = new Button(storeBtnTexture, 50, 50);
             Map map = new Map(renderer);
+            var srf = SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png");
+            Texture srfs = new Texture(renderer, srf, 816, 1104, 0, pt);
             map.mapBuilder(1024, 600);
+
             SDL_Event ev;
             bool loop = true;
             while (loop)
@@ -76,7 +82,12 @@ namespace CopDrop
 
                 
                 SDL_Delay(10);
-                map.init();
+
+                map.present();
+                //srfs.show();
+                SDL_RenderPresent(renderer);
+                map.release();
+                //srfs.discrad();
                 storeBtn.texture.discrad();
 
 
@@ -198,13 +209,38 @@ namespace CopDrop
 
     class Map
     {
-        private Texture[,] Textures = new Texture[1,1];
         private IntPtr renderer;
         public Map(IntPtr renderer)
         {
             this.renderer = renderer;
 
         }
+        Texture wallFront;
+        Texture[] cornerBorder = new Texture[2];
+        Texture wallBorderLeft;
+        Texture wallBorderRight;
+        Texture[] cornerBorderBottom = new Texture[2];
+        Texture floor;
+        Texture wallBorderBottom;
+        enum texturesNames
+        {
+            wallFront = 1,
+            cornerBorder = 2,
+            wallborder = 3,
+            floor = 4
+        }
+
+        int[,] map =
+        {
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+        };
+
+        Texture[] textures = new Texture[1]; 
 
         public void mapBuilder( int WINDOW_WIDTH, int WINDOW_HEIGHT)
         {
@@ -212,7 +248,6 @@ namespace CopDrop
             SDL_Point pt;
             pt.x = 0;
             pt.y = 0;
-            Textures = new Texture[7,4];
 
             var srf = SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png");
 
@@ -230,8 +265,8 @@ namespace CopDrop
             destinationRect.y = 0;
             destinationRect.w = 143;
             destinationRect.h = 96;
-            // Copies the srf surface on the destination surface 
 
+            // Copies the srf surface on the destination surface
             SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
             sourceRect.x = 0;
             sourceRect.y = 239;
@@ -258,34 +293,34 @@ namespace CopDrop
 
             SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
 
-            Textures[0,0] = new Texture(renderer, destinationSurface, 143 * 3, 96, 0, pt);
+            wallFront = new Texture(renderer, destinationSurface, 143 * 3, 96, 0, pt);
 
-            Textures[0,0].transform.x = WINDOW_WIDTH / 2 - Textures[0,0].transform.w / 2;
-            Textures[0,0].transform.y = WINDOW_HEIGHT / 2 - 100;
+            wallFront.transform.x = WINDOW_WIDTH / 2 - wallFront.transform.w / 2;
+            wallFront.transform.y = WINDOW_HEIGHT / 2 - 100;
 
 
             // Creates an array texture named cornerBorder
             
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < cornerBorder.Length; i++)
             {
 
-                Textures[1,i] = new Texture(renderer, SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png"), 25, 18, 0, pt);
-                Textures[1, i].transformSurface.x = 555;
-                Textures[1, i].transformSurface.y = 48;
+                cornerBorder[i] = new Texture(renderer, SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png"), 25, 18, 0, pt);
+                cornerBorder[i].transformSurface.x = 555;
+                cornerBorder[i].transformSurface.y = 48;
 
 
                 if (i != 0)
                 {
                     // Second texture is to the right of the last wallfront texture class array
-                    Textures[1, i].transform.x = Textures[0, 0].transform.x + Textures[0, 0].transform.w;
-                    Textures[1, i].transform.y = Textures[0, 0].transform.y;
+                    cornerBorder[i].transform.x = wallFront.transform.x + wallFront.transform.w;
+                    cornerBorder[i].transform.y = wallFront.transform.y;
 
                 }
                 else
                 {
                     // First texture is right next to the first wallFront array texture
-                    Textures[1, i].transform.x = Textures[0, 0].transform.x - Textures[1, i].transform.x - 20;
-                    Textures[1, i].transform.y = Textures[0, 0].transform.y;
+                    cornerBorder[i].transform.x = wallFront.transform.x - cornerBorder[i].transform.x - 20;
+                    cornerBorder[i].transform.y = wallFront.transform.y;
                 } 
 
 
@@ -330,12 +365,12 @@ namespace CopDrop
 
             SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
 
-            Textures[2, 0] = new Texture(renderer, destinationSurface, 21, 78 * 3, 0, pt);
+            wallBorderLeft = new Texture(renderer, destinationSurface, 21, 78 * 3, 0, pt);
 
             destinationSurface = SDL.SDL_CreateRGBSurface(0, 25, 78, 32, 0, 0, 0, 0);
 
-            Textures[2, 0].transform.x = Textures[1, 0].transform.x;
-            Textures[2, 0].transform.y = Textures[1, 0].transform.y + Textures[1, 0].transform.h;
+            wallBorderLeft.transform.x = cornerBorder[0].transform.x;
+            wallBorderLeft.transform.y = cornerBorder[0].transform.y + cornerBorder[0].transform.h;
 
             // wallBorderRight code
 
@@ -375,30 +410,30 @@ namespace CopDrop
             destinationRect.h = 78;
 
             SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
-            Textures[3, 0] = new Texture(renderer, destinationSurface, 21, 78 * 3, 0, pt);
-            Textures[3, 0].transform.x = Textures[1, 1].transform.x;
-            Textures[3, 0].transform.y = Textures[1, 1].transform.y + Textures[1, 1].transform.h;
+            wallBorderRight = new Texture(renderer, destinationSurface, 21, 78 * 3, 0, pt);
+            wallBorderRight.transform.x = cornerBorder[1].transform.x;
+            wallBorderRight.transform.y = cornerBorder[1].transform.y + cornerBorder[1].transform.h;
 
             // cornerBorderBottom code
-            for (int i = 2; i < 4; i++)
+            for (int i = 0; i < cornerBorderBottom.Length; i++)
             {
-                Textures[4, i] = new Texture(renderer, SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png"), 25, 18, 0, pt);
-                Textures[4, i].transformSurface.x = 555;
-                Textures[4, i].transformSurface.y = 48;
+                cornerBorderBottom[i] = new Texture(renderer, SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png"), 25, 18, 0, pt);
+                cornerBorderBottom[i].transformSurface.x = 555;
+                cornerBorderBottom[i].transformSurface.y = 48;
 
 
-                if (i != 2)
+                if (i != 0)
                 {
                     // Second texture is to the right of the last wallfront texture class array
-                    Textures[4, i].transform.x = Textures[0, 0].transform.x + Textures[0, 0].transform.w;
-                    Textures[4, i].transform.y = Textures[3, 0].transform.y + Textures[2, 0].transform.h;
+                    cornerBorderBottom[i].transform.x = wallFront.transform.x + wallFront.transform.w;
+                    cornerBorderBottom[i].transform.y = wallBorderRight.transform.y + wallBorderLeft.transform.h;
 
                 }
                 else
                 {
                     // First texture is right next to the first wallFront array texture
-                    Textures[4 ,i].transform.x = Textures[0, 0].transform.x - Textures[4, i].transform.x - 20;
-                    Textures[4, i].transform.y = Textures[3, 0].transform.y + Textures[2, 0].transform.h;
+                    cornerBorderBottom[i].transform.x = wallFront.transform.x - cornerBorderBottom[i].transform.x - 20;
+                    cornerBorderBottom[i].transform.y = wallBorderRight.transform.y + wallBorderLeft.transform.h;
                 }
 
 
@@ -474,77 +509,106 @@ namespace CopDrop
             SDL_BlitSurface(destinationSurface, ref sourceRect, destinationSurface2, ref destinationRect);
 
 
-            Textures[5, 0] = new Texture(renderer, destinationSurface2, 143 * 3, 85 * 2, 0, pt);
-            Textures[5, 0].transform.x = Textures[0, 0].transform.x;
-            Textures[5, 0].transform.y = Textures[0, 0].transform.y + Textures[0, 0].transform.h;
+            floor = new Texture(renderer, destinationSurface2, 143 * 3, 85 * 2, 0, pt);
+            floor.transform.x = wallFront.transform.x;
+            floor.transform.y = wallFront.transform.y + wallFront.transform.h;
 
 
             SDL_FreeSurface(destinationSurface);
 
             // Wall borderBottom
-            destinationSurface = SDL.SDL_CreateRGBSurface(0, 21, 78 * 5, 32, 0, 0, 0, 0);
-            for (int i = 0; i < 5; i++)
+            destinationSurface = SDL.SDL_CreateRGBSurface(0, 41 * 10, 18, 32, 0, 0, 0, 0);
+            sourceRect.x = 577;
+            sourceRect.y = 144;
+            sourceRect.w = 41;
+            sourceRect.h = 18;
+            for (int i = 0; i < 10; i++)
             {
-                sourceRect.x = 555;
-                sourceRect.y = 66;
-                sourceRect.w = 21;
-                sourceRect.h = 78;
-
-                destinationRect.x = 0;
-                destinationRect.y = 78 * i;
-                destinationRect.w = 21;
-                destinationRect.h = 78;
+                destinationRect.x = 41 * i;
+                destinationRect.y = 0;
+                destinationRect.w = 41;
+                destinationRect.h = 18;
 
                 // Copies the srf surface on the destination surface 
                 SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
-            }
+            }          
+            
             SDL_Point ptCenter;
 
 
-            ptCenter.x = 21 / 2;
-            ptCenter.y = (78 * 3) / 2;
-            Textures[6, 0] = new Texture(renderer, destinationSurface, 19, 78 * 5 + 40, 90, ptCenter);
-            Textures[6, 0].transform.x = Textures[5, 0].transform.y + Textures[5, 0].transform.h + 135;// + cornerBorderBottom[0].transform.h; 
-            Textures[6, 0].transform.y = Textures[5, 0].transform.x + 47;
+            ptCenter.x = 41 * 10 / 2;
+            ptCenter.y = 18 / 2;
+            wallBorderBottom = new Texture(renderer, destinationSurface, 41 * 10, 18, 0, ptCenter);
+            wallBorderBottom.transform.x = cornerBorderBottom[0].transform.x + cornerBorderBottom[0].transform.w - 4; 
+            wallBorderBottom.transform.y = cornerBorderBottom[0].transform.y;
+            
+            bool createWallfront = false;
+            
 
             SDL_FreeSurface(srf);
         }
-
-        public void init()
+        /*
+        bool textureCreation()
         {
-            for (int i = 0; i < Textures.Length; i++)
+            SDL_Rect sourceRect;
+            SDL_Rect destinationRect;
+            int[] arrayTexturelist =
             {
-                for (int k = 0; k < 4; k++)
+                (int)texturesNames.wallFront, (int)texturesNames.cornerBorder, (int)texturesNames.floor,
+                (int)texturesNames.wallborder
+            };
+            int count = 0;
+            for (int i = 0; i < 6; i ++)
+            {
+                for (int k = 0; k < 22; k++)
                 {
-                    Textures[i, k].show();
-                    Textures[i, k].show();
-                    Textures[i, k].show();
-                    Textures[i, k].show();
-                    Textures[i, k].show();
-                    Textures[i, k].show();
-                    Textures[i, k].show();
+                    if (map[i,k] == (int)texturesNames.wallFront)
+                    {
+                        count++;
+                        sourceRect.x = 0;
+                        sourceRect.y = 239;
+                        sourceRect.w = 143;
+                        sourceRect.h = 96;
+
+                        destinationRect.x = 0;
+                        destinationRect.y = 0;
+                        destinationRect.w = 143;
+                        destinationRect.h = 96;
+
+                        // Copies the srf surface on the destination surface
+                        SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
+                    }
                 }
-                
             }
+            textures = new Texture[count];
             
-
-
-            SDL_RenderPresent(renderer);
-
-            for (int i = 0; i < Textures.Length; i++)
+        }
+        */
+        public void present()
+        {
+            floor.show();
+            wallFront.show();
+            for (int i = 0; i < cornerBorder.Length; i++)
             {
-                for (int k = 0; k < Textures.Length; k++)
-                {
-                    Textures[i, k].discrad();
-                    Textures[i, k].discrad();
-                    Textures[i, k].discrad();
-                    Textures[i, k].discrad();
-                    Textures[i, k].discrad();
-                    Textures[i, k].discrad();
-                    Textures[i, k].discrad();
-                }
-
+                cornerBorder[i].show();
+                cornerBorderBottom[i].show();
             }
+            wallBorderLeft.show();
+            wallBorderRight.show();
+            wallBorderBottom.show();
+        }
+        public void release()
+        {
+            floor.discrad();
+            wallFront.discrad();
+            for (int i = 0; i < cornerBorder.Length; i++)
+            {
+                cornerBorder[i].discrad();
+                cornerBorderBottom[i].discrad();
+            }
+            wallBorderLeft.discrad();
+            wallBorderRight.discrad();
+            wallBorderBottom.discrad();
         }
     }
 
