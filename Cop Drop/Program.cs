@@ -42,10 +42,12 @@ namespace CopDrop
 
             Texture storeBtnTexture = new Texture(renderer, SDL_image.IMG_Load("storeAssets/stockXIcon.png"), 48, 48, 0, pt);
             Button storeBtn = new Button(storeBtnTexture, 50, 50);
-            Map map = new Map(renderer, 'r', WINDOW_WIDTH, WINDOW_HEIGHT);
+            Map mapRoom = new Map(renderer, 'r', WINDOW_WIDTH, WINDOW_HEIGHT);
+            Map mapStore = new Map(renderer, 's', WINDOW_WIDTH, WINDOW_HEIGHT);
 
             SDL_Event ev;
             bool loop = true;
+            bool switchMap = false;
             while (loop)
             {
 
@@ -61,27 +63,38 @@ namespace CopDrop
                         case SDL_EventType.SDL_MOUSEBUTTONDOWN:
                             if (storeBtn.isButtonPressed(mouseX, mouseY))
                             {
-                                map.release();
-                                map.switchMap('s');
+                                switchMap = !switchMap;
                             }
                             break;
                     }
                 }
                 //For debugging 
                 //Console.WriteLine("x is" + mouseX + " y is" + mouseY);
-
-
+                if (switchMap)
+                {
+                    SDL_RenderClear(renderer);
+                    mapStore.present();
+                }
+                else
+                {
+                    SDL_RenderClear(renderer);
+                    mapRoom.present();
+                }
+                if (switchMap)
+                {
+                    SDL_RenderClear(renderer);
+                    mapStore.present();
+                }
+                storeBtn.texture.show();
 
                 // Present/shows the the texture and deletes them
 
                 SDL_Delay(10);
 
-                map.present();
-                storeBtn.texture.show();
                 SDL_RenderPresent(renderer);
-                map.release();
+                mapStore.release();
+                mapRoom.release();
                 storeBtn.texture.discrad();
-
 
 
             }
@@ -252,9 +265,19 @@ namespace CopDrop
             var srf = SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png");
 
             var destinationSurface = SDL.SDL_CreateRGBSurface(0, 143 * 3, 96, 32, 0, 0, 0, 0);
+
+
+
             switch (map)
             {
                 case 'r':
+                    wallFront = null;
+                    cornerBorder = null;
+                    wallBorderLeft = null;
+                    wallBorderRight = null;
+                    cornerBorderBottom = null;
+                    floor = null;
+                    wallBorderBottom = null;
                     // Wall Front
                     SDL_Rect sourceRect;
                     sourceRect.x = 0;
@@ -302,7 +325,7 @@ namespace CopDrop
 
 
                     // Creates an array texture named cornerBorder
-
+                    cornerBorder = new Texture[2];
                     for (int i = 0; i < cornerBorder.Length; i++)
                     {
 
@@ -417,6 +440,7 @@ namespace CopDrop
                     wallBorderRight.transform.y = cornerBorder[1].transform.y + cornerBorder[1].transform.h;
 
                     // cornerBorderBottom code
+                    cornerBorderBottom = new Texture[2];
                     for (int i = 0; i < cornerBorderBottom.Length; i++)
                     {
                         cornerBorderBottom[i] = new Texture(renderer, SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png"), 25, 18, 0, pt);
@@ -548,6 +572,8 @@ namespace CopDrop
 
                     break;
                 case 's':
+                    sneakers = null;
+                    storeName = null;
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                     SDL_RenderClear(renderer);
 
@@ -592,11 +618,7 @@ namespace CopDrop
             Texture textures = new Texture(renderer, destinationSurface, 143 * 4, 96, 0, pt);
             */
         }
-        public void switchMap(char Changemap)
-        {
-            this.map = Changemap;
-            mapBuilder();
-        }
+
         public void present()
         {
             switch (map)
@@ -618,8 +640,6 @@ namespace CopDrop
                     break;
             }
             Console.WriteLine(map);
-
-
         }
         public void release()
         {
