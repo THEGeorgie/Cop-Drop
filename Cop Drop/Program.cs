@@ -1,5 +1,6 @@
 ﻿// A runtime library used for pixel accses
 using System.Threading;
+using OpenTK.Graphics.OpenGL;
 using SDL2;
 using static SDL2.SDL;
 
@@ -85,26 +86,26 @@ namespace CopDrop
     class Button
     {
         public Texture texture;
+        int[] buttonAreaPositionX;
+        int[] buttonAreaPositionY;
 
         public Button(Texture tx, int x, int y)
         {
-            // baisc structs for the button 
-
-            // this need to be tweaked for to work with the texture class (this will give muche more flexebilty) 
-
+            // 
             texture = tx.deepCopy();
 
             texture.transform.x = x;
             texture.transform.y = y;
-        }
-
-        public bool isButtonPressed(int mouseX, int mouseY)
-        {
-            int[] buttonAreaPositionX = new int[texture.transform.w];
-            int[] buttonAreaPositionY = new int[texture.transform.h];
 
             // Sets values to array by taking buttons x cord and ads +1 for every pixle of its width same for y and height.
             // This will then calculate the surface of the button plus the cordinate of every pixle 
+            
+        }
+
+        public bool isButtonPressed()
+        {
+            buttonAreaPositionX = new int[texture.transform.w];
+            buttonAreaPositionY = new int[texture.transform.h];
             for (int i = 0; i < texture.transform.w; i++)
             {
                 buttonAreaPositionX[i] = texture.transform.x + i;
@@ -118,7 +119,7 @@ namespace CopDrop
                 for (int k = 0; k < texture.transform.h; k++)
                 {
                     //checks if the mouse cords are in the area of the button 
-                    if (buttonAreaPositionX[i] == mouseX && buttonAreaPositionY[k] == mouseY)
+                    if (buttonAreaPositionX[i] == GlobalVariable.Instance.mouseX && buttonAreaPositionY[k] == GlobalVariable.Instance.mouseY)
                     {
                         return true;
                     }
@@ -210,7 +211,7 @@ namespace CopDrop
 
         int[] chartDataX = null;//{ 2, 4, 5, 6, 3, 11, 9, 6, 2, 8, 14, 12, 4, 6, 7 };
         int[] chartDataY = null;//{ 3, 4, 8, 6, 1, 5, 7, 4, 6, 2 };
-
+        int[] sneakerDetails = new int[6];
         int[] chartMapX = null;//new int[15];
         int[] chartMapY = null;//new int[10];
         Texture wallFront;
@@ -221,6 +222,7 @@ namespace CopDrop
         Texture floor;
         Texture wallBorderBottom;
 
+        Button exitButton;
         Button[,] sneakers;
         Texture storeName;
         /*
@@ -251,14 +253,11 @@ namespace CopDrop
             pt.x = 0;
             pt.y = 0;
 
-            var srf = SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png");
-            var destinationSurface = SDL.SDL_CreateRGBSurface(0, 143 * 3, 96, 32, 0, 0, 0, 0);
-
-
-
             switch (map)
             {
                 case 'r':
+                    var srf = SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png");
+                    var destinationSurface = SDL.SDL_CreateRGBSurface(0, 143 * 3, 96, 32, 0, 0, 0, 0);
                     // Wall Front
                     SDL_Rect sourceRect;
                     sourceRect.x = 0;
@@ -558,6 +557,7 @@ namespace CopDrop
                         "storeAssets/sneakerRed.png",
                         "storeAssets/sneakerRedBlue.png",
                         "storeAssets/sneaker.png",
+                        "storeAssets/exitSign.png"
                     };
                     var surfacesStoreName = SDL_image.IMG_Load("storeAssets/storeName.png");
                     IntPtr[] surfaces = new IntPtr[imagePathsSneakers.Length];
@@ -583,6 +583,8 @@ namespace CopDrop
                         textureSS[i] = new Texture(renderer, surfaces[i], 80, 80, 0, pt);
 
                     }
+                    Texture temp = new Texture(renderer, surfaces[3], 50, 50, 0, pt);
+                    exitButton = new Button(temp, 100, 100);
                     sneakers = new Button[3, 4];
                     for (int i = 0; i < 3; i++)
                     {
@@ -595,12 +597,15 @@ namespace CopDrop
                     {
                         textureSS[i].discrad();
                     }
+                    temp.discrad();
                     for (int i = 0; i < surfaces.Length; i++)
                     {
                         SDL_FreeSurface(surfaces[i]);
                     }
+
                     break;
                 //details for the sneaker
+                /*
                 case 'd':
                     chartDataX = new int[15] { 2, 4, 5, 6, 3, 11, 9, 6, 2, 8, 14, 12, 4, 6, 7 };
                     chartDataY = new int[10] { 3, 4, 8, 6, 1, 5, 7, 4, 6, 2 };
@@ -620,6 +625,7 @@ namespace CopDrop
                     }
 
                     break;
+                    */
                 default:
                     break;
             }
@@ -667,9 +673,19 @@ namespace CopDrop
             {
                 for (int k = 0; k < 4; k++)
                 {
-                    if (sneakers[i, k].isButtonPressed(GlobalVariable.Instance.mouseX, GlobalVariable.Instance.mouseY) && GlobalVariable.Instance.mouseButtonClick == 1)
+                    if (sneakers[i, k].isButtonPressed() && GlobalVariable.Instance.mouseButtonClick == 1 && GlobalVariable.Instance.openSnekaerDetails == 0)
                     {
                         GlobalVariable.Instance.openSnekaerDetails = 1;
+                        sneakerDetails[0] = i;
+                        sneakerDetails[1] = k;
+                        sneakerDetails[2] = sneakers[i, k].texture.transform.w;
+                        sneakerDetails[3] = sneakers[i, k].texture.transform.h;
+                        sneakerDetails[4] = sneakers[i, k].texture.transform.x;
+                        sneakerDetails[5] = sneakers[i, k].texture.transform.y;
+                        sneakers[i, k].texture.transform.w *= 2;
+                        sneakers[i, k].texture.transform.h *= 2;
+                        sneakers[i, k].texture.transform.x = MAP_WIDTH / 2 - sneakers[i, k].texture.transform.w / 2;
+                        sneakers[i, k].texture.transform.y = 130;
                         GlobalVariable.Instance.mouseButtonClick = 0;
                     }
                 }
@@ -686,11 +702,31 @@ namespace CopDrop
                     break;
                 case 's':
                     buttonUpdateSnaeker();
+                    if (exitButton.isButtonPressed() && GlobalVariable.Instance.mouseButtonClick == 1)
+                    {
+
+                        GlobalVariable.Instance.openSnekaerDetails = 0;
+                        sneakers[sneakerDetails[0], sneakerDetails[1]].texture.transform.w = sneakerDetails[2];
+                        sneakers[sneakerDetails[0], sneakerDetails[1]].texture.transform.h = sneakerDetails[3];
+                        sneakers[sneakerDetails[0], sneakerDetails[1]].texture.transform.x = sneakerDetails[4];
+                        sneakers[sneakerDetails[0], sneakerDetails[1]].texture.transform.y = sneakerDetails[5];
+
+
+                        GlobalVariable.Instance.mouseButtonClick = 0;
+                    }
                     break;
                 default:
                     break;
             }
         }
+
+        public Map deepCopy()
+        {
+            Map deepCopyTexture = new Map(this.renderer, this.map, this.MAP_WIDTH, this.MAP_HEIGHT);
+
+            return deepCopyTexture;
+        }
+
 
         public void present()
         {
@@ -710,28 +746,20 @@ namespace CopDrop
                     wallBorderBottom.show();
                     break;
                 case 's':
-                    storeName.show();
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-                    for (int i = 0; i < 3; i++)
+                    storeName.show();
+                    if (GlobalVariable.Instance.openSnekaerDetails == 1)
                     {
-                        for (int k = 0; k < 4; k++)
-                        {
-                            sneakers[i, k].texture.show();
-                        }
+                        sneakers[sneakerDetails[0], sneakerDetails[1]].texture.show();
+                        exitButton.texture.show();
                     }
-                    break;
-                case 'd':
-
-                    for (int i = 0; i < 10; i++)
+                    else
                     {
-                        for (int k = 0; k < 15; k++)
+                        for (int i = 0; i < 3; i++)
                         {
-                            if (i != 9 && k != 14)
+                            for (int k = 0; k < 4; k++)
                             {
-                                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-
-                                SDL_RenderDrawLine(renderer, chartDataX[k], chartDataY[i], chartDataX[k + 1], chartDataY[i + 1]);
+                                sneakers[i, k].texture.show();
                             }
                         }
                     }
@@ -765,6 +793,7 @@ namespace CopDrop
                             sneakers[i, k].texture.discrad();
                         }
                     }
+                    exitButton.texture.discrad();
                     break;
                 default:
                     break;
@@ -776,7 +805,7 @@ namespace CopDrop
 
     class MapManager
     {
-        private Map currentMap;
+        public Map currentMap;
 
         public void LoadMap(Map map)
         {
@@ -785,9 +814,8 @@ namespace CopDrop
             {
                 currentMap.release();
             }
-
             // Load the new map
-            currentMap = map;
+            currentMap = map.deepCopy();
         }
 
         public void update()
@@ -810,15 +838,15 @@ namespace CopDrop
 
         Map mapStore;
         Map mapRoom;
-        Map mapSneakerDetails;
         MapManager mapManager = new MapManager();
         Button storeBtn;
-
+        Button exitStoreBtn;
         IntPtr renderer;
         IntPtr window;
 
         SDL_Event ev;
 
+        char map;
         public Game(int WINDOW_WIDTH, int WINDOW_HEIGHT)
         {
             SDL_Init(SDL_INIT_VIDEO);
@@ -826,8 +854,11 @@ namespace CopDrop
 
             this.WINDOW_HEIGHT = WINDOW_HEIGHT;
             this.WINDOW_WIDTH = WINDOW_WIDTH;
+            var surface = SDL_image.IMG_Load("storeAssets/stockXIcon.png");
 
             SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN, out window, out renderer);
+            SDL_SetWindowTitle(window, "Cop Drop");
+            SDL_SetWindowIcon(window, surface);
 
             SDL_Point pt;
             pt.y = 0;
@@ -835,30 +866,40 @@ namespace CopDrop
 
             mapStore = new Map(renderer, 's', WINDOW_WIDTH, WINDOW_HEIGHT);
             mapRoom = new Map(renderer, 'r', WINDOW_WIDTH, WINDOW_HEIGHT);
-            mapSneakerDetails = new Map(renderer, 'd', WINDOW_WIDTH, WINDOW_HEIGHT);
 
-            var surface = SDL_image.IMG_Load("storeAssets/stockXIcon.png");
-            Texture storeBtnTexture = new Texture(renderer, surface, 48, 48, 0, pt);
-            storeBtn = new Button(storeBtnTexture, 50, 50);
+
+            Texture temp = new Texture(renderer, surface, 48, 48, 0, pt);
+            storeBtn = new Button(temp, 50, 50);
+
+            surface = SDL_image.IMG_Load("storeAssets/exitSign.png");
+            temp = new Texture(renderer, surface, 50, 50, 0, pt);
+            exitStoreBtn = new Button(temp, 50, 50);
+
             SDL_FreeSurface(surface);
-
+            temp.discrad();
             mapManager.LoadMap(mapRoom);
+            map = 'r';
         }
 
         public void render()
         {
             SDL_RenderClear(renderer);
             mapManager.render();
-            storeBtn.texture.show();
+
+            if (map == 'r')
+            {
+                storeBtn.texture.show();
+            }
+            else if (map == 's')
+            {
+                exitStoreBtn.texture.show();
+            }
+
             SDL_RenderPresent(renderer);
         }
 
         public void update()
         {
-            if (GlobalVariable.Instance.openSnekaerDetails == 1)
-            {
-                mapManager.LoadMap(mapSneakerDetails);
-            }
             mapManager.update();
         }
 
@@ -868,6 +909,7 @@ namespace CopDrop
             mapRoom.release();
             mapStore.release();
             storeBtn.texture.discrad();
+            exitStoreBtn.texture.discrad();
             SDL_DestroyRenderer(renderer);
             SDL_DestroyWindow(window);
 
@@ -880,7 +922,7 @@ namespace CopDrop
             SDL_GetMouseState(out int buffer1, out int buffer2);
             GlobalVariable.Instance.mouseX = buffer1;
             GlobalVariable.Instance.mouseY = buffer2;
-            while (SDL_PollEvent(out ev) == 1)
+            while (SDL_PollEvent(out ev) != 0)
             {
                 switch (ev.type)
                 {
@@ -888,10 +930,15 @@ namespace CopDrop
                         return true;
                         break;
                     case SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                        if (storeBtn.isButtonPressed(GlobalVariable.Instance.mouseX, GlobalVariable.Instance.mouseY))
+                        if (storeBtn.isButtonPressed() && map == 'r')
                         {
                             mapManager.LoadMap(mapStore);
-                            storeBtn.texture.discrad();
+                            map = 's';
+                        }
+                        else if (exitStoreBtn.isButtonPressed() && map == 's')
+                        {
+                            mapManager.LoadMap(mapRoom);
+                            map = 'r';
                         }
                         GlobalVariable.Instance.mouseButtonClick = 1;
                         break;
