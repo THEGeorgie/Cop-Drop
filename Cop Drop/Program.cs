@@ -1,13 +1,13 @@
 ﻿// A runtime library used for pixel accses
-using System.Threading;
-using OpenTK.Graphics.OpenGL;
 using SDL2;
+//SQlite
+using System.Data.SQLite;
 using static SDL2.SDL;
-
 //Gpu rendering libraries
 
 // for displaying dynamic texts
 using static SDL2.SDL_ttf;
+
 
 namespace CopDrop
 {
@@ -99,7 +99,7 @@ namespace CopDrop
 
             // Sets values to array by taking buttons x cord and ads +1 for every pixle of its width same for y and height.
             // This will then calculate the surface of the button plus the cordinate of every pixle 
-            
+
         }
 
         public bool isButtonPressed()
@@ -950,6 +950,96 @@ namespace CopDrop
             return false;
         }
     }
+    class SQL
+    {
+        static void SQLiteInsert(string dbPath, string input)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(dbPath))
+            {
+                connection.Open();
+
+                // Insert data
+                using (SQLiteCommand insertData = new SQLiteCommand(
+                    "INSERT INTO NOTES(data) VALUES (@dataNotes)", connection))
+                {
+                    insertData.Parameters.AddWithValue("@dataNotes", input);
+                    insertData.ExecuteNonQuery();
+                }
+                connection.Close();
+            }
+
+        }
+        static string[] SQLiteSelect(string dbPath, string table)
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(dbPath))
+            {
+                connection.Open();
+                int counter = 0;
+                string[] bufferMem = null;
+
+
+
+                using (SQLiteCommand selectData = new SQLiteCommand(
+                $"SELECT * FROM {table}", connection))
+                {
+
+                    try
+                    {
+                        using (SQLiteDataReader reader = selectData.ExecuteReader())
+                        {
+
+
+                            while (reader.Read())
+                            {
+                                counter++;
+                            }
+                            bufferMem = new string[counter];
+
+                        }
+                        using (SQLiteDataReader reader = selectData.ExecuteReader())
+                        {
+                            counter = 0;
+                            while (reader.Read())
+                            {
+                                int id = reader.GetInt32(0);
+
+                                bufferMem[counter] = "id: " + reader.GetString(1);
+                                counter++;
+
+                            }
+                            connection.Close();
+                            return bufferMem;
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        return null;
+                    }
+
+
+                }
+
+
+            }
+        }
+        static void SQLiteDelete(string dbPath, char input)
+        {
+            int i = input - 48;
+            using (SQLiteConnection connection = new SQLiteConnection(dbPath))
+            {
+                using (SQLiteCommand command = new SQLiteCommand("DELETE FROM NOTES WHERE id = @idNote ", connection))
+                {
+                    command.Parameters.AddWithValue("idNote", i);
+                    command.ExecuteNonQuery();
+                }
+                connection.Close();
+            }
+        }
+    }
+
+
 
 }
 
