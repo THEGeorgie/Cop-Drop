@@ -63,7 +63,7 @@ namespace CopDrop
         public int mouseY { get; set; }
         public int mouseButtonClick { get; set; }
         public int openSnekaerDetails { get; set; }
-        public IntPtr font = TTF_OpenFont("font.ttf", 13);
+        public IntPtr font = TTF_OpenFont("font.otf", 13);
         public IntPtr renderer;
 
 
@@ -243,7 +243,7 @@ namespace CopDrop
             {
                 texture.discrad();
             }
-            texture = new Texture(surface, fontSize * txt.Length, fontSize, 0, pt);
+            texture = new Texture(surface, fontSize * txt.Length, fontSize, rotation, pt);
             SDL_FreeSurface(surface);
         }
         public void dealocate()
@@ -766,7 +766,7 @@ namespace CopDrop
                         sneakerInfo[3] = new Text("description", 18, color);
                         for (int z = 0; z < sneakerInfo.Length; z++)
                         {
-                            sneakerInfo[z].x = sneakers[i, k].texture.transform.x;
+                            sneakerInfo[z].x = sneakers[i, k].texture.transform.x - 300;
                             sneakerInfo[z].y = sneakers[i, k].texture.transform.y + sneakers[i, k].texture.transform.h + 50 + (30 * z);
                             sneakerInfo[z].update();
 
@@ -1083,28 +1083,31 @@ namespace CopDrop
             }
 
         }
-        static string[] SQLiteSelect(string dbPath, string table)
+        static string[] SQLiteSelect(string dbPath, string table, string filter)
         {
             using (SQLiteConnection connection = new SQLiteConnection(dbPath))
             {
                 connection.Open();
                 int counter = 0;
                 string[] bufferMem = null;
-
-
-
+                string command;
+                if (filter != null){
+                    command = $"SELECT * FROM {table} {filter}";
+                }else
+                {
+                    command = $"SELECT * FROM {table}"; 
+                }
                 using (SQLiteCommand selectData = new SQLiteCommand(
-                $"SELECT * FROM {table}", connection))
+                command, connection))
                 {
 
                     try
                     {
                         using (SQLiteDataReader reader = selectData.ExecuteReader())
                         {
-
-
                             while (reader.Read())
                             {
+                                //how much data it will be stored
                                 counter++;
                             }
                             bufferMem = new string[counter];
@@ -1116,7 +1119,7 @@ namespace CopDrop
                             while (reader.Read())
                             {
                                 int id = reader.GetInt32(0);
-
+                                
                                 bufferMem[counter] = "id: " + reader.GetString(1);
                                 counter++;
 
