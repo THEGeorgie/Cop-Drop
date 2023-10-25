@@ -1,0 +1,79 @@
+[
+    {
+        "type": 0,
+        "backGroundColor": [
+            204,
+            255,
+            255,
+            255
+        ]
+    },
+    {
+        "type": 1,
+        "objects": [
+            {
+                "wallBorderFront": null,
+                "quantity": 6,
+                "sourceX": 0,
+                "sourceY": 239,
+                "x": 100,
+                "y": 100,
+                "w": 143,
+                "h": 96,
+                "rotation": 0,
+                "alignOn": "x"
+            },
+
+            {
+                "wallborderLeft": null,
+                "quantity": 5,
+                "sourceX": 555,
+                "sourceY": 66,
+                "x": 79,
+                "y": 118,
+                "w": 21,
+                "h": 78,
+                "rotation": 0,
+                "alignOn": "y"
+            },
+            {
+                "cornerBorderLeft":null,
+                "quantity": 1,
+                "sourceX": 555,
+                "sourceY": 48,
+                "x": 79,
+                "y": 100,
+                "w": 21,
+                "h": 18,
+                "rotation": 0,
+                "alignOn": "x"
+            },
+
+            {
+                "wallborderRight": null,
+                "quantity": 5,
+                "sourceX": 555,
+                "sourceY": 66,
+                "x": 937,
+                "y": 118,
+                "w": 21,
+                "h": 78,
+                "rotation": 0,
+                "alignOn": "y"
+            },
+            {
+                "cornerBorderRight":null,
+                "quantity": 1,
+                "sourceX": 555,
+                "sourceY": 48,
+                "x": 937,
+                "y": 100,
+                "w": 21,
+                "h": 18,
+                "rotation": 90,
+                "alignOn": "x"
+            }
+        ]
+    }
+]
+    
