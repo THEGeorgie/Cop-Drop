@@ -250,10 +250,10 @@ namespace CopDrop
         int MAP_WIDTH;
         int MAP_HEIGHT;
         List<Texture> texObjects = new List<Texture>();
-
-        IntPtr objects;
-
+        List<IntPtr> surfaces = new List<IntPtr>();
         JArray json;
+        JObject miselaneus;
+
         public newMap(string jsonPath)
         {
             if (File.Exists(jsonPath))
@@ -263,6 +263,8 @@ namespace CopDrop
 
                 // Parse the JSON content as a dynamic object
                 json = JArray.Parse(jsonContent);
+                miselaneus = (JObject)json[0];
+
                 mapBuilder();
             }
             else
@@ -275,7 +277,12 @@ namespace CopDrop
         {
             SDL_Rect sourceRect;
             SDL_Rect destinationRect = new SDL_Rect();
-            var srf = SDL_image.IMG_Load("Modern tiles_Free/Interiors_free/48x48/Room_Builder_free_48x48.png");
+            var srf = SDL_image.IMG_Load(miselaneus["assetLocation"].ToString());
+            JArray locationSurfaces = (JArray)miselaneus["assetLocation"];
+            for (int i = 0; i < locationSurfaces.Count; i++)
+            {
+                surfaces.Add(SDL_image.IMG_Load(locationSurfaces[i].ToString()));
+            }
             var destinationSurface = IntPtr.Zero;
             int count = 0;
             try
@@ -314,8 +321,18 @@ namespace CopDrop
                                     destinationRect.y = (int)objects["h"] * i;
                                     destinationRect.x = 0;
                                 }
+                                if ((int)objects["surfaceIndex"] == 0)
+                                {
 
-                                SDL_BlitSurface(srf, ref sourceRect, destinationSurface, ref destinationRect);
+                                }
+                                switch ((int)objects["surfaceIndex"])
+                                {
+                                    case 1:
+                                        SDL_BlitSurface(surfaces[0], ref sourceRect, destinationSurface, ref destinationRect);
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
                             if ((char)objects["alignOn"] == 'x')
                             {
@@ -357,7 +374,6 @@ namespace CopDrop
 
         public void render()
         {
-            JObject miselaneus = (JObject)json[0];
             JArray backgroundColor = (JArray)miselaneus["backGroundColor"];
 
             SDL_SetRenderDrawColor(GlobalVariable.Instance.renderer, (byte)backgroundColor[0], (byte)backgroundColor[1], (byte)backgroundColor[2], (byte)backgroundColor[3]);
