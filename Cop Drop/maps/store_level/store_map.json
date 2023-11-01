@@ -1,0 +1,14 @@
+[
+    {
+        "type":0,
+        "assetLocation": [
+            "maps/store_level/assets/sneakersheet.png"
+        ],
+        "backGroundColor": [
+            255,
+            255,
+            255,
+            255
+        ]
+    }
+]

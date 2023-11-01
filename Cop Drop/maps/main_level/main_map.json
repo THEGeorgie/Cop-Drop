@@ -2,7 +2,8 @@
     {
         "type": 0,
         "assetLocation": [
-            "maps/main_level/assets/room.png"
+            "maps/main_level/assets/room.png",
+            "maps/main_level/assets/stockXIcon.png"
         ],
         "backGroundColor": [
             204,
@@ -18,6 +19,7 @@
                 "surfaceIndex": 0,
                 "wallBorderFront": null,
                 "quantity": 6,
+                "margin": 0,
                 "sourceX": 0,
                 "sourceY": 239,
                 "x": 100,
@@ -32,6 +34,7 @@
                 "surfaceIndex": 0,
                 "wallborderLeft": null,
                 "quantity": 5,
+                "margin": 0,
                 "sourceX": 555,
                 "sourceY": 66,
                 "x": 79,
@@ -45,6 +48,7 @@
                 "surfaceIndex": 0,
                 "cornerBorderLeft":null,
                 "quantity": 1,
+                "margin": 0,
                 "sourceX": 555,
                 "sourceY": 48,
                 "x": 79,
@@ -59,6 +63,7 @@
                 "surfaceIndex": 0,
                 "wallborderRight": null,
                 "quantity": 5,
+                "margin": 0,
                 "sourceX": 555,
                 "sourceY": 66,
                 "x": 937,
@@ -72,16 +77,38 @@
                 "surfaceIndex": 0,
                 "cornerBorderRight":null,
                 "quantity": 1,
+                "margin": 0,
                 "sourceX": 555,
                 "sourceY": 48,
                 "x": 937,
                 "y": 100,
                 "w": 21,
                 "h": 18,
-                "rotation": 90,
+                "rotation": 0,
+                "alignOn": "x"
+            }
+        ]
+    },
+    {
+        "type": 2,
+        "objects":[
+            {
+                "surfaceIndex": 1,
+                "storeBtn":null,
+                "quantity": 1,
+                "margin": 0,
+                "sourceX": 0,
+                "sourceY": 0,
+                "x": 10,
+                "y": 10,
+                "w": 48,
+                "h": 48,
+                "rotation": 0,
+                "onPress": "load_map maps/store_map/store_map.json",
                 "alignOn": "x"
             }
         ]
     }
+    
 ]
     
