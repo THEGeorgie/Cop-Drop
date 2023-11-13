@@ -34,9 +34,10 @@ namespace CopDrop
             transform.h = textureHeight;
             transform.x = 0;
             transform.y = 0;
+            SDL_Surface surfaceInfo = (SDL.SDL_Surface)System.Runtime.InteropServices.Marshal.PtrToStructure(surface, typeof(SDL.SDL_Surface));
 
-            transformSurface.w = transform.w;
-            transformSurface.h = transform.h;
+            transformSurface.w = surfaceInfo.w;
+            transformSurface.h = surfaceInfo.h;
             transformSurface.x = 0;
             transformSurface.y = 0;
         }

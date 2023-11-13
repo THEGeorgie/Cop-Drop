@@ -1,9 +1,3 @@
-/*
-    using Microsoft.VisualBasic;
-    using System.Text.Json.Nodes;
-    using System.Security.AccessControl;
-    using System.Xml.Serialization;
-*/
 using System.Runtime.InteropServices;
 
 namespace CopDrop
@@ -53,9 +47,10 @@ namespace CopDrop
         public int mouseX { get; set; }
         public int mouseY { get; set; }
         public int mouseButtonClick { get; set; }
-        public int openSnekaerDetails { get; set; }
         public IntPtr font = TTF_OpenFont("font.otf", 13);
         public IntPtr renderer;
+
+        public SDL_Event ev;
 
         public bool exit {get; set;}
 
@@ -97,20 +92,3 @@ namespace CopDrop
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

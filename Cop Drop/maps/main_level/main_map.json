@@ -104,7 +104,9 @@
                 "w": 48,
                 "h": 48,
                 "rotation": 0,
-                "onPress": "load_map maps/store_map/store_map.json",
+                "onPress":[
+                    "load_map maps/store_level/store_map.json"
+                ],
                 "alignOn": "x"
             }
         ]
