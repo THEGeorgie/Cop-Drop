@@ -1,0 +1,108 @@
+[
+    {
+        "type": 0,
+        "assetLocation": [
+            "maps/main_menu_level/assets/blankButton.png"
+        ],
+        "backGroundColor": [
+            204,
+            255,
+            255,
+            255
+        ]
+    },
+    {
+        "type": 2.3,
+        "objects":[
+            {
+                "Description": "play",
+                "surfaceIndex": 0,
+                "quantity": 1,
+                "margin": 0,
+                "sourceX": 0,
+                "sourceY": 0,
+                "x": 392,
+                "y": 100,
+                "w": 120,
+                "h": 50,
+                "rotation": 0,
+                "onPress": [
+                    "load_map maps/main_level/main_map.json"
+                ],
+                "color": [
+                    160,
+                    105,
+                    25,
+                    255
+                ],
+                "fontsize": 20,
+                "text": "Play",
+                "textX": 24,
+                "textY": 15,
+                "textRotation": 0,
+                "alignOn": "x"
+            },
+            {
+                "Description": "exit",
+                "surfaceIndex": 0,
+                "quantity": 1,
+                "margin": 0,
+                "sourceX": 0,
+                "sourceY": 0,
+                "x": 392,
+                "y": 170,
+                "w": 120,
+                "h": 50,
+                "rotation": 0,
+                "onPress": [
+                    "exit"
+                ],
+                "color": [
+                    160,
+                    105,
+                    25,
+                    255
+                ],
+                "fontsize": 20,
+                "text": "exit",
+                "textX": 24,
+                "textY": 15,
+                "textRotation": 0,
+                "alignOn": "x"
+            }
+        ]
+    },
+    {
+        "type": 3,
+        "objects": [
+            {
+                "Description": "title",
+                "color": [
+                    0,
+                    0,
+                    0,
+                    255
+                ],
+                "fontsize": 30,
+                "text": "Cop Drop",
+                "x": 360,
+                "y": 5,
+                "rotation": 0
+            },
+            {
+                "Description": "author",
+                "color": [
+                    0,
+                    0,
+                    0,
+                    255
+                ],
+                "fontsize": 15,
+                "text": "Created by Gjorgi Danev",
+                "x": 340,
+                "y": 550,
+                "rotation": 0
+            }
+        ]
+    }
+]

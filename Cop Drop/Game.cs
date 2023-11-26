@@ -26,7 +26,7 @@ namespace CopDrop
             SDL_SetWindowTitle(window, "Cop Drop");
             SDL_SetWindowIcon(window, surface);
 
-            commandLine.Instance.cli("load_map maps/main_level/main_map.json");
+            commandLine.Instance.cli("load_map maps/main_menu_level/main_menu_map.json");
 
         }
 

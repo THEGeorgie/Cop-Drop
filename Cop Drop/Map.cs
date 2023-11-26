@@ -1,4 +1,5 @@
 // json library
+using System.Globalization;
 using Newtonsoft.Json.Linq;
 
 namespace CopDrop
@@ -7,9 +8,10 @@ namespace CopDrop
     {
         int MAP_WIDTH;
         int MAP_HEIGHT;
-        List<Texture> texObjects = new List<Texture>();
+        List<Texture> spriteObjects = new List<Texture>();
         List<Button> btnObjects = new List<Button>();
         List<IntPtr> surfaces = new List<IntPtr>();
+        List<Text> textObjects = new List<Text>();
         JArray json;
         JObject miselaneus;
 
@@ -22,6 +24,7 @@ namespace CopDrop
 
                 // Parse the JSON content as a dynamic object
                 json = JArray.Parse(jsonContent);
+                // objects used for in general (background color assets to use etc.)
                 miselaneus = (JObject)json[0];
 
                 mapBuilder();
@@ -36,6 +39,7 @@ namespace CopDrop
         {
             SDL_Rect sourceRect = new SDL_Rect();
             SDL_Rect destinationRect = new SDL_Rect();
+            SDL_Color textColor = new SDL_Color();
 
             var srf = SDL_image.IMG_Load(miselaneus["assetLocation"].ToString());
 
@@ -47,73 +51,96 @@ namespace CopDrop
                 surfaces.Add(SDL_image.IMG_Load(locationSurfaces[i].ToString()));
             }
 
+
+            
+
             var destinationSurface = IntPtr.Zero;
             int count = 0;
             try
             {
                 foreach (var type in json)
                 {
+                    count = 0;
+                    // every type has its own way of building
                     if ((int)type["type"] != 0)
                     {
                         foreach (var objects in type["objects"])
                         {
-                            // menas if it has multiple surfaces in one row it combines it into one texture
-                            if ((char)objects["alignOn"] == 'x')
+                            if ((int)type["type"] == 1 || (int)type["type"] == 2)
                             {
-                                // creates the surface where we will copy the images to 
-                                destinationSurface = SDL.SDL_CreateRGBSurface(0, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], 32, 0, 0, 0, 0);
-                            }
-                            else if ((char)objects["alignOn"] == 'y')
-                            {
-                                // creates the surface where we will copy the images to 
-                                destinationSurface = SDL.SDL_CreateRGBSurface(0, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], 32, 0, 0, 0, 0);
-                            }
-                            uint color = SDL.SDL_MapRGB(SDL.SDL_AllocFormat(SDL.SDL_PIXELFORMAT_ARGB8888), (byte)backgroundColor[0], (byte)backgroundColor[0], (byte)backgroundColor[0]);
-
-                            SDL.SDL_FillRect(destinationSurface, IntPtr.Zero, color);
-                            SDL_Surface surfaceInfo = (SDL.SDL_Surface)System.Runtime.InteropServices.Marshal.PtrToStructure(surfaces[(int)objects["surfaceIndex"]], typeof(SDL.SDL_Surface));
-
-                            sourceRect.x = (int)objects["sourceX"];
-                            sourceRect.y = (int)objects["sourceY"];
-                            sourceRect.w = surfaceInfo.w;
-                            sourceRect.h = surfaceInfo.h;
-                            destinationRect.h = (int)objects["h"];
-                            destinationRect.w = (int)objects["w"];
-
-                            for (int i = 0; i < (int)objects["quantity"]; i++)
-                            {
+                                // menas if it has multiple surfaces in one row it combines it into one texture
                                 if ((char)objects["alignOn"] == 'x')
                                 {
-                                    destinationRect.x = ((int)objects["w"] + (int)objects["margin"]) * i;
-                                    destinationRect.y = 0;
+                                    // creates the surface where we will copy the images to 
+                                    destinationSurface = SDL.SDL_CreateRGBSurface(0, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], 32, 0, 0, 0, 0);
                                 }
                                 else if ((char)objects["alignOn"] == 'y')
                                 {
-                                    destinationRect.y = ((int)objects["h"] + (int)objects["margin"]) * i;
-                                    destinationRect.x = 0;
+                                    // creates the surface where we will copy the images to 
+                                    destinationSurface = SDL.SDL_CreateRGBSurface(0, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], 32, 0, 0, 0, 0);
                                 }
-                                //combinig the surfaces
-                                SDL_BlitSurface(surfaces[(int)objects["surfaceIndex"]], ref sourceRect, destinationSurface, ref destinationRect);
+                                uint color = SDL.SDL_MapRGB(SDL.SDL_AllocFormat(SDL.SDL_PIXELFORMAT_ARGB8888), (byte)backgroundColor[0], (byte)backgroundColor[0], (byte)backgroundColor[0]);
+
+                                SDL.SDL_FillRect(destinationSurface, IntPtr.Zero, color);
+                                SDL_Surface surfaceInfo = (SDL.SDL_Surface)System.Runtime.InteropServices.Marshal.PtrToStructure(surfaces[(int)objects["surfaceIndex"]], typeof(SDL.SDL_Surface));
+
+                                sourceRect.x = (int)objects["sourceX"];
+                                sourceRect.y = (int)objects["sourceY"];
+                                sourceRect.w = surfaceInfo.w;
+                                sourceRect.h = surfaceInfo.h;
+                                destinationRect.h = (int)objects["h"];
+                                destinationRect.w = (int)objects["w"];
+
+
+                                for (int i = 0; i < (int)objects["quantity"]; i++)
+                                {
+                                    if ((char)objects["alignOn"] == 'x')
+                                    {
+                                        destinationRect.x = ((int)objects["w"] + (int)objects["margin"]) * i;
+                                        destinationRect.y = 0;
+                                    }
+                                    else if ((char)objects["alignOn"] == 'y')
+                                    {
+                                        destinationRect.y = ((int)objects["h"] + (int)objects["margin"]) * i;
+                                        destinationRect.x = 0;
+                                    }
+                                    //combinig the surfaces
+                                    SDL_BlitSurface(surfaces[(int)objects["surfaceIndex"]], ref sourceRect, destinationSurface, ref destinationRect);
+
+                                }
+                            }
+                            else if ((int)type["type"] == 3 || (double)type["type"] == 2.3)
+                            {
+                                JArray colorArray = (JArray)objects["color"];
+                                textColor = new SDL_Color
+                                {
+                                    r = (byte)colorArray[0],
+                                    g = (byte)colorArray[1],
+                                    b = (byte)colorArray[2],
+                                    a = (byte)colorArray[3]
+                                };
+                                Console.WriteLine("The text color from map are: "+ colorArray[0] + " " + textColor.g + " "+ textColor.b);
 
                             }
-                            switch ((int)type["type"])
+                            switch ((double)type["type"])
                             {
                                 // 1 means its a texture object 
                                 case 1:
                                     if ((char)objects["alignOn"] == 'x')
                                     {
-                                        texObjects.Add(new Texture(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"]));
+                                        spriteObjects.Add(new Texture(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"]));
 
                                     }
                                     else if ((char)objects["alignOn"] == 'y')
                                     {
-                                        texObjects.Add(new Texture(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"]));
+                                        spriteObjects.Add(new Texture(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"]));
                                     }
-                                    texObjects[count].transform.x = (int)objects["x"];
-                                    texObjects[count].transform.y = (int)objects["y"];
+                                    spriteObjects[count].transform.x = (int)objects["x"];
+                                    spriteObjects[count].transform.y = (int)objects["y"];
                                     break;
                                 // 2 means its a button object 
                                 case 2:
+                                    //There is a convertion from 
                                     JArray commandList = (JArray)objects["onPress"];
                                     string[] buffer = new string[commandList.Count];
                                     for (int i = 0; i < commandList.Count; i++)
@@ -129,6 +156,30 @@ namespace CopDrop
                                         btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], buffer));
                                     }
                                     break;
+                                case 2.3:
+                                    JArray commandList1 = (JArray)objects["onPress"];
+                                    string[] buffer1 = new string[commandList1.Count];
+                                    for (int i = 0; i < commandList1.Count; i++)
+                                    {
+                                        buffer1[i] = (string)commandList1[i];
+                                    }
+                                    Text txt = new Text((string)objects["text"], (int)objects["fontsize"], textColor);
+                                    if ((char)objects["alignOn"] == 'x')
+                                    {
+                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], buffer1));
+                                    }
+                                    else if ((char)objects["alignOn"] == 'y')
+                                    {
+                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], buffer1));
+                                    }
+                                    break;
+                                case 3:
+                                    textObjects.Add(new Text((string)objects["text"], (int)objects["fontsize"], textColor));
+                                    Console.WriteLine(count);
+                                    textObjects[count].x = (int)objects["x"];
+                                    textObjects[count].y = (int)objects["y"];
+                                    textObjects[count].update();
+                                    break;
                                 default:
                                     break;
                             }
@@ -143,9 +194,9 @@ namespace CopDrop
                 Console.WriteLine("An error occurred while building the map. Most likely, it's a JSON problem.");
                 throw;
             }
-
-
         }
+
+
 
         public void update()
         {
@@ -155,16 +206,34 @@ namespace CopDrop
                 {
                     for (int k = 0; k < btnObjects[i].onPress.Length; k++)
                     {
-                       commandLine.Instance.cli(btnObjects[i].onPress[k]); 
+                        commandLine.Instance.cli(btnObjects[i].onPress[k]);
                     }
                 }
             }
         }
         public void discrad()
         {
-            for (int i = 0; i < texObjects.Count; i++)
+            if (spriteObjects != null)
             {
-                texObjects[i].discrad();
+                for (int i = 0; i < spriteObjects.Count; i++)
+                {
+                    spriteObjects[i].discrad();
+                }
+            }
+            if (btnObjects != null)
+            {
+                for (int i = 0; i < btnObjects.Count; i++)
+                {
+                    btnObjects[i].discrad();
+                    btnObjects[i].discardText();
+                }
+            }
+            if (textObjects != null)
+            {
+                for (int i = 0; i < textObjects.Count; i++)
+                {
+                    textObjects[i].dealocate();
+                }
             }
         }
 
@@ -174,18 +243,32 @@ namespace CopDrop
 
             SDL_SetRenderDrawColor(GlobalVariable.Instance.renderer, (byte)backgroundColor[0], (byte)backgroundColor[1], (byte)backgroundColor[2], (byte)backgroundColor[3]);
 
-            for (int i = 0; i < texObjects.Count; i++)
+            if (spriteObjects != null)
             {
-                texObjects[i].show();
+                for (int i = 0; i < spriteObjects.Count; i++)
+                {
+                    spriteObjects[i].show();
+                }
             }
-            for (int i = 0; i < btnObjects.Count; i++)
+            if (btnObjects != null)
             {
-                btnObjects[i].show();
+                for (int i = 0; i < btnObjects.Count; i++)
+                {
+                    btnObjects[i].show();
+                    btnObjects[i].showText();
+                }
+            }
+            if (textObjects != null)
+            {
+                for (int i = 0; i < textObjects.Count; i++)
+                {
+                    textObjects[i].render();
+                }
             }
         }
 
     }
-   
+
     public class MapManager
     {
         public Map currentMap;

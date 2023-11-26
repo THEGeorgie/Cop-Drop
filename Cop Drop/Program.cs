@@ -54,9 +54,12 @@ namespace CopDrop
 
         public bool exit {get; set;}
 
+        public Mouse mouse;
+
         private GlobalVariable()
         {
             // Initialize your global variable here
+            mouse = new Mouse();
             mouseX = 42;
             mouseY = 42;
             mouseButtonClick = 0;

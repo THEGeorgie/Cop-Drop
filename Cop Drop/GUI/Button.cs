@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Dynamic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CopDrop
 {
@@ -9,15 +10,16 @@ namespace CopDrop
     {
         int[] buttonAreaPositionX;
         int[] buttonAreaPositionY;
-
         public string[] onPress;
-
+        private int change;
+        Text text;
         public Button(IntPtr surface, int textureWidth, int textureHeight, int rotation, int x, int y, string[] onPress) : base(surface, textureWidth, textureHeight, rotation)
         {
             transform.x = x;
             transform.y = y;
 
             this.onPress = onPress;
+            change = 0;
 
             // Sets values to array by taking buttons x cord and ads +1 for every pixle of its width same for y and height.
             // This will then calculate the surface of the button plus the cordinate of every pixle 
@@ -32,7 +34,61 @@ namespace CopDrop
                 buttonAreaPositionY[i] = transform.y + i;
             }
         }
+        public Button(IntPtr surface, int textureWidth, int textureHeight, int rotation, Text text, int textX, int textY, int x, int y, string[] onPress) : base(surface, textureWidth, textureHeight, rotation)
+        {
+            this.text = text.deepCopy();
+            transform.x = x;
+            transform.y = y;
+            this.text = text;
 
+            //makes the position of the text relative to the position of the button and not on the whole window
+            if (textX <= transform.w)
+            {
+                this.text.x = transform.x + textX;
+            }else
+            {
+                this.text.x = transform.x + transform.w;
+            }
+            if (textY <= transform.h)
+            {
+                this.text.y = transform.y + textY;
+            }else
+            {
+                this.text.y = transform.y + transform.h;
+            }
+
+            text.update();
+
+
+            this.onPress = onPress;
+
+            // Sets values to array by taking buttons x cord and ads +1 for every pixle of its width same for y and height.
+            // This will then calculate the surface of the button plus the cordinate of every pixle 
+            buttonAreaPositionX = new int[this.transform.w];
+            buttonAreaPositionY = new int[this.transform.h];
+            for (int i = 0; i < this.transform.w; i++)
+            {
+                buttonAreaPositionX[i] = this.transform.x + i;
+            }
+            for (int i = 0; i < this.transform.h; i++)
+            {
+                buttonAreaPositionY[i] = this.transform.y + i;
+            }
+        }
+        public void showText()
+        {
+            if (text != null)
+            {
+                text.render();
+            }
+        }
+        public void discardText()
+        {
+            if (text != null)
+            {
+                text.dealocate();
+            }
+        }
         public bool isButtonPressed()
         {
             for (int i = 0; i < transform.w; i++)
@@ -40,12 +96,22 @@ namespace CopDrop
                 for (int k = 0; k < transform.h; k++)
                 {
                     //checks if the mouse cords are in the area of the button 
-                    if (buttonAreaPositionX[i] == GlobalVariable.Instance.mouseX && buttonAreaPositionY[k] == GlobalVariable.Instance.mouseY && GlobalVariable.Instance.mouseButtonClick == 1)
+                    if (buttonAreaPositionX[i] == GlobalVariable.Instance.mouseX && buttonAreaPositionY[k] == GlobalVariable.Instance.mouseY)
                     {
-                        GlobalVariable.Instance.mouseButtonClick = 0;
-                        return true;
-                    }
+                       // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.POINTER);
+                       // Console.WriteLine("Mouse in area");
+                        if (GlobalVariable.Instance.mouseButtonClick == 1)
+                        {
+                            GlobalVariable.Instance.mouseButtonClick = 0;
+                           // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.CURSOR);
 
+                            return true;
+                        }
+
+                    }
+                    else {
+                       // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.CURSOR);
+                    }
                 }
             }
             return false;
@@ -67,19 +133,21 @@ namespace CopDrop
         public void cli(string command)
         {
             severd = command.Split(' ');
-            /*
-            for (int i = 0; i < severd.Length; i++)
-            {
-                Console.WriteLine(severd[i]);
-            }
-            */
             if (severd[0] != "null")
             {
                 for (int i = 0; i < accitonList.Length; i++)
                 {
                     if (severd[0] == accitonList[i])
                     {
-                        dAccitons[i](severd[1]);
+                        Console.WriteLine(i);
+                        if (i == 1)
+                        {
+                            dAccitons[i](severd[0]);
+                        }
+                        else
+                        {
+                            dAccitons[i](severd[1]);
+                        }
                     }
                 }
             }

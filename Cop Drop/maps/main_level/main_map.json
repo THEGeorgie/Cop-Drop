@@ -3,7 +3,8 @@
         "type": 0,
         "assetLocation": [
             "maps/main_level/assets/room.png",
-            "maps/main_level/assets/stockXIcon.png"
+            "maps/main_level/assets/stockXIcon.png",
+            "maps/main_level/assets/blankButton.png"
         ],
         "backGroundColor": [
             204,
@@ -107,6 +108,39 @@
                 "onPress":[
                     "load_map maps/store_level/store_map.json"
                 ],
+                "alignOn": "x"
+            }
+        ]
+    },
+    {
+        "type": 2.3,
+        "objects":[
+            {
+                "Description": "Main menu",
+                "surfaceIndex": 2,
+                "quantity": 1,
+                "margin": 0,
+                "sourceX": 0,
+                "sourceY": 0,
+                "x": 850,
+                "y": 5,
+                "w": 120,
+                "h": 50,
+                "rotation": 0,
+                "onPress": [
+                    "load_map maps/main_menu_level/main_menu_map.json"
+                ],
+                "color": [
+                    0,
+                    0,
+                    0,
+                    255
+                ],
+                "fontsize": 13,
+                "text": "Main menu",
+                "textX": 0,
+                "textY": 15,
+                "textRotation": 0,
                 "alignOn": "x"
             }
         ]
