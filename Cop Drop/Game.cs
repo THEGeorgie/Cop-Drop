@@ -3,6 +3,8 @@
     global using static SDL2.SDL;
     // for displaying dynamic texts
     global using static SDL2.SDL_ttf;
+    //system claases
+    global using System;
 namespace CopDrop
 {
 

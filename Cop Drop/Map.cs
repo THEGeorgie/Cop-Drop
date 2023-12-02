@@ -142,35 +142,53 @@ namespace CopDrop
                                 case 2:
                                     //There is a convertion from 
                                     JArray commandList = (JArray)objects["onPress"];
-                                    string[] buffer = new string[commandList.Count];
+                                    JArray scriptList = (JArray)objects["scripts"];
+
+                                    string[] bufferCommands = new string[commandList.Count];
+                                    string[] bufferScripts = new string[scriptList.Count];
+
                                     for (int i = 0; i < commandList.Count; i++)
                                     {
-                                        buffer[i] = (string)commandList[i];
+                                        bufferCommands[i] = (string)commandList[i];
                                     }
+                                    for (int i = 0; i < scriptList.Count; i++)
+                                    {
+                                        bufferScripts[i] = (string)scriptList[i];
+                                    }
+
+
                                     if ((char)objects["alignOn"] == 'x')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], buffer));
+                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands,bufferScripts));
                                     }
                                     else if ((char)objects["alignOn"] == 'y')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], buffer));
+                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands,bufferScripts));
                                     }
                                     break;
                                 case 2.3:
                                     JArray commandList1 = (JArray)objects["onPress"];
-                                    string[] buffer1 = new string[commandList1.Count];
+                                    JArray scriptList1 = (JArray)objects["scripts"];
+                                    string[] bufferCommands1 = new string[commandList1.Count];
+                                    string[] bufferScripts1 = new string[scriptList1.Count];
+
                                     for (int i = 0; i < commandList1.Count; i++)
                                     {
-                                        buffer1[i] = (string)commandList1[i];
+                                        bufferCommands1[i] = (string)commandList1[i];
                                     }
+                                    for (int i = 0; i < scriptList1.Count; i++)
+                                    {
+                                        bufferScripts1[i] = (string)scriptList1[i];
+                                    }
+
                                     Text txt = new Text((string)objects["text"], (int)objects["fontsize"], textColor);
                                     if ((char)objects["alignOn"] == 'x')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], buffer1));
+                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, bufferScripts1));
                                     }
                                     else if ((char)objects["alignOn"] == 'y')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], buffer1));
+                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, bufferScripts1));
                                     }
                                     break;
                                 case 3:
@@ -202,6 +220,7 @@ namespace CopDrop
         {
             for (int i = 0; i < btnObjects.Count; i++)
             {
+                btnObjects[i].update();
                 if (btnObjects[i].isButtonPressed())
                 {
                     for (int k = 0; k < btnObjects[i].onPress.Length; k++)

@@ -3,24 +3,41 @@ using System.Dynamic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
+using System;
+using System.Linq;
+using System.Reflection;
+
 
 namespace CopDrop
 {
-    class Button : Texture
+    public class Button : Texture
     {
         int[] buttonAreaPositionX;
         int[] buttonAreaPositionY;
         public string[] onPress;
         private int change;
+        private string[] scriptPaths;
+        IlinkButtonScripts[] linkButtonScripts;
         Text text;
-        public Button(IntPtr surface, int textureWidth, int textureHeight, int rotation, int x, int y, string[] onPress) : base(surface, textureWidth, textureHeight, rotation)
+        public Button(IntPtr surface, int textureWidth, int textureHeight, int rotation, int x, int y, string[] onPress, string[] scriptPaths) : base(surface, textureWidth, textureHeight, rotation)
         {
             transform.x = x;
             transform.y = y;
-
             this.onPress = onPress;
             change = 0;
-
+            if (scriptPaths != null){
+                this.scriptPaths = scriptPaths;
+                linkButtonScripts = new IlinkButtonScripts[this.scriptPaths.Length];
+                for (int i = 0; i < this.scriptPaths.Length; i++)
+                {
+                    linkButtonScripts[i] = CreateScriptInstance(this,this.scriptPaths[i]);
+                    linkButtonScripts[i].start();
+                }
+            }
+            
             // Sets values to array by taking buttons x cord and ads +1 for every pixle of its width same for y and height.
             // This will then calculate the surface of the button plus the cordinate of every pixle 
             buttonAreaPositionX = new int[transform.w];
@@ -34,25 +51,36 @@ namespace CopDrop
                 buttonAreaPositionY[i] = transform.y + i;
             }
         }
-        public Button(IntPtr surface, int textureWidth, int textureHeight, int rotation, Text text, int textX, int textY, int x, int y, string[] onPress) : base(surface, textureWidth, textureHeight, rotation)
+        public Button(IntPtr surface, int textureWidth, int textureHeight, int rotation, Text text, int textX, int textY, int x, int y, string[] onPress, string[] scriptPaths) : base(surface, textureWidth, textureHeight, rotation)
         {
             this.text = text.deepCopy();
             transform.x = x;
             transform.y = y;
             this.text = text;
+            if (scriptPaths != null){
+                this.scriptPaths = scriptPaths;
+                linkButtonScripts = new IlinkButtonScripts[this.scriptPaths.Length];
+                for (int i = 0; i < this.scriptPaths.Length; i++)
+                {
+                    linkButtonScripts[i] = CreateScriptInstance(this,this.scriptPaths[i]);
+                    linkButtonScripts[i].start();
+                }
+            }
 
             //makes the position of the text relative to the position of the button and not on the whole window
             if (textX <= transform.w)
             {
                 this.text.x = transform.x + textX;
-            }else
+            }
+            else
             {
                 this.text.x = transform.x + transform.w;
             }
             if (textY <= transform.h)
             {
                 this.text.y = transform.y + textY;
-            }else
+            }
+            else
             {
                 this.text.y = transform.y + transform.h;
             }
@@ -62,6 +90,35 @@ namespace CopDrop
 
             this.onPress = onPress;
 
+            
+        }
+        public void showText()
+        {
+            if (text != null)
+            {
+                text.render();
+            }
+        }
+        public void update()
+        {
+            if (linkButtonScripts != null)
+            {
+                for (int i = 0; i < scriptPaths.Length; i++)
+                {
+                    linkButtonScripts[i].update();
+                }
+                
+            }
+        }
+        public void discardText()
+        {
+            if (text != null)
+            {
+                text.dealocate();
+            }
+        }
+        public bool isButtonPressed()
+        {
             // Sets values to array by taking buttons x cord and ads +1 for every pixle of its width same for y and height.
             // This will then calculate the surface of the button plus the cordinate of every pixle 
             buttonAreaPositionX = new int[this.transform.w];
@@ -74,23 +131,6 @@ namespace CopDrop
             {
                 buttonAreaPositionY[i] = this.transform.y + i;
             }
-        }
-        public void showText()
-        {
-            if (text != null)
-            {
-                text.render();
-            }
-        }
-        public void discardText()
-        {
-            if (text != null)
-            {
-                text.dealocate();
-            }
-        }
-        public bool isButtonPressed()
-        {
             for (int i = 0; i < transform.w; i++)
             {
                 for (int k = 0; k < transform.h; k++)
@@ -98,23 +138,71 @@ namespace CopDrop
                     //checks if the mouse cords are in the area of the button 
                     if (buttonAreaPositionX[i] == GlobalVariable.Instance.mouseX && buttonAreaPositionY[k] == GlobalVariable.Instance.mouseY)
                     {
-                       // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.POINTER);
-                       // Console.WriteLine("Mouse in area");
+                        // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.POINTER);
+                        // Console.WriteLine("Mouse in area");
                         if (GlobalVariable.Instance.mouseButtonClick == 1)
                         {
                             GlobalVariable.Instance.mouseButtonClick = 0;
-                           // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.CURSOR);
+                            // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.CURSOR);
 
                             return true;
                         }
 
                     }
-                    else {
-                       // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.CURSOR);
+                    else
+                    {
+                        // GlobalVariable.Instance.mouse.changeCursor(mouseCursors.CURSOR);
                     }
                 }
             }
             return false;
+        }
+        private IlinkButtonScripts CreateScriptInstance(Button button, string scriptPath)
+        {
+            // Assuming your scripts are in the same directory as the executing assembly,
+            // you might need to adjust the path accordingly.
+
+            // Read the script code from the file
+            string scriptCode = System.IO.File.ReadAllText(scriptPath);
+
+            // Compile the script code into an assembly
+            var compilation = CSharpCompilation.Create("ButtonScriptAssembly")
+                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                .AddReferences(AppDomain.CurrentDomain.GetAssemblies().Select(a => MetadataReference.CreateFromFile(a.Location)))
+                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(scriptCode));
+
+            using (var ms = new System.IO.MemoryStream())
+            {
+                EmitResult result = compilation.Emit(ms);
+
+                if (!result.Success)
+                {
+                    Console.WriteLine("Script compilation failed:");
+                    foreach (var diagnostic in result.Diagnostics)
+                    {
+                        Console.WriteLine(diagnostic);
+                    }
+                    return null;
+                }
+
+                // Load the compiled assembly
+                Assembly assembly = Assembly.Load(ms.ToArray());
+
+                // Find the class that implements IButtonScriptLink
+                var scriptType = assembly.GetTypes()
+                    .FirstOrDefault(t => typeof(IlinkButtonScripts).IsAssignableFrom(t) && t.IsClass);
+
+                // If a type is found, create an instance of it, passing the Button instance
+                if (scriptType != null)
+                {
+                    return Activator.CreateInstance(scriptType, button) as IlinkButtonScripts;
+                }
+                else
+                {
+                    Console.WriteLine("No class implementing IlinkButtonScripts found in the compiled assembly.");
+                    return null;
+                }
+            }
         }
     }
 

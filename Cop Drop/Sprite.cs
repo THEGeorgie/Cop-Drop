@@ -1,6 +1,6 @@
 namespace CopDrop
 {
-    class Texture
+    public class Texture
     {
         // All of the struct nedded for a texture
 

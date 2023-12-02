@@ -1,6 +1,6 @@
 namespace CopDrop
 {
-    class Text
+    public class Text
     {
         Texture texture;
         IntPtr surface;

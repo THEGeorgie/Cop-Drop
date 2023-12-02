@@ -26,6 +26,9 @@
                 "w": 120,
                 "h": 50,
                 "rotation": 0,
+                "scripts": [
+                    
+                ],
                 "onPress": [
                     "load_map maps/main_level/main_map.json"
                 ],
@@ -54,6 +57,9 @@
                 "w": 120,
                 "h": 50,
                 "rotation": 0,
+                "scripts": [
+                    
+                ],
                 "onPress": [
                     "exit"
                 ],
@@ -65,6 +71,36 @@
                 ],
                 "fontsize": 20,
                 "text": "exit",
+                "textX": 24,
+                "textY": 15,
+                "textRotation": 0,
+                "alignOn": "x"
+            },
+            {
+                "Description": "spokky Button",
+                "surfaceIndex": 0,
+                "quantity": 1,
+                "margin": 0,
+                "sourceX": 0,
+                "sourceY": 0,
+                "x": 550,
+                "y": 170,
+                "w": 120,
+                "h": 50,
+                "rotation": 0,
+                "scripts": [
+                    "scripts/buttonChangeColor.cs"
+                ],
+                "onPress": [
+                ],
+                "color": [
+                    160,
+                    105,
+                    25,
+                    255
+                ],
+                "fontsize": 20,
+                "text": "spokky Button",
                 "textX": 24,
                 "textY": 15,
                 "textRotation": 0,
@@ -85,6 +121,9 @@
                 ],
                 "fontsize": 30,
                 "text": "Cop Drop",
+                "scripts":[
+
+                ],
                 "x": 360,
                 "y": 5,
                 "rotation": 0
@@ -99,6 +138,9 @@
                 ],
                 "fontsize": 15,
                 "text": "Created by Gjorgi Danev",
+                "scripts":[
+                    
+                ],
                 "x": 340,
                 "y": 550,
                 "rotation": 0
