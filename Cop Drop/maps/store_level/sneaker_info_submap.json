@@ -17,8 +17,8 @@
     "type": 1,
     "objects": [
       {
-        "surfaceIndex": 2,
         "Description": "logo",
+        "surfaceIndex": 2,
         "quantity": 1,
         "margin": 0,
         "sourceX": 0,
@@ -28,11 +28,12 @@
         "w": 118,
         "h": 48,
         "rotation": 0,
-        "alignOn": "x"
+        "alignOn": "x",
+        "scripts":[]
       },
       {
-        "surfaceIndex": 0,
         "Description": "sneaker",
+        "surfaceIndex": 0,
         "quantity": 1,
         "margin": 0,
         "sourceX": "117",
@@ -42,7 +43,8 @@
         "w": 117,
         "h": 108,
         "rotation": 0,
-        "alignOn": "x"
+        "alignOn": "x",
+        "scripts":[]
       }
     ]
   },
@@ -50,8 +52,8 @@
     "type": 2,
     "objects": [
       {
-        "surfaceIndex": 1,
         "Description": "exitBtn",
+        "surfaceIndex": 1,
         "quantity": 1,
         "margin": 0,
         "sourceX": 0,
@@ -61,6 +63,7 @@
         "w": 48,
         "h": 48,
         "rotation": 0,
+        "scripts":[],
         "onPress": [
           "load_map maps/store_level/store_map.json"
         ],

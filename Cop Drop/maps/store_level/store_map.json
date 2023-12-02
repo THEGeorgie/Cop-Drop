@@ -17,8 +17,8 @@
         "type": 1,
         "objects": [
             {
+                "Description": "LogoName",
                 "surfaceIndex": 2,
-                "LogoName": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -28,7 +28,8 @@
                 "w": 118,
                 "h": 48,
                 "rotation": 0,
-                "alignOn": "x"
+                "alignOn": "x",
+                "scripts":[]
             }
         ]
     },
@@ -36,8 +37,8 @@
         "type": 2,
         "objects": [
             {
+                "Description": "exitSign",
                 "surfaceIndex": 1,
-                "exitSign": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -47,14 +48,15 @@
                 "w": 48,
                 "h": 48,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "load_map maps/main_level/main_map.json"
                 ],
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -64,6 +66,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -71,8 +74,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 117,
@@ -82,6 +85,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:117>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -89,8 +93,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 235,
@@ -100,6 +104,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:235>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -107,8 +112,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -118,6 +123,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -125,8 +131,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -136,6 +142,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -143,8 +150,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 117,
@@ -154,6 +161,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:117>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -161,8 +169,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 235,
@@ -172,6 +180,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:235>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -179,8 +188,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -190,6 +199,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -197,8 +207,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -208,6 +218,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -215,8 +226,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 117,
@@ -226,6 +237,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:117>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -233,8 +245,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 235,
@@ -244,6 +256,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:235>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -251,8 +264,8 @@
                 "alignOn": "x"
             },
             {
+                "Description": "sneaker1",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -262,6 +275,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
+                "scripts":[],
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  

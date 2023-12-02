@@ -28,9 +28,9 @@
                 "w": 143,
                 "h": 96,
                 "rotation": 0,
-                "alignOn": "x"
+                "alignOn": "x",
+                "scripts": []
             },
-
             {
                 "surfaceIndex": 0,
                 "wallborderLeft": null,
@@ -43,11 +43,12 @@
                 "w": 21,
                 "h": 78,
                 "rotation": 0,
-                "alignOn": "y"
+                "alignOn": "y",
+                "scripts": []
             },
             {
                 "surfaceIndex": 0,
-                "cornerBorderLeft":null,
+                "cornerBorderLeft": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 555,
@@ -57,9 +58,9 @@
                 "w": 21,
                 "h": 18,
                 "rotation": 0,
-                "alignOn": "x"
+                "alignOn": "x",
+                "scripts": []
             },
-
             {
                 "surfaceIndex": 0,
                 "wallborderRight": null,
@@ -72,11 +73,12 @@
                 "w": 21,
                 "h": 78,
                 "rotation": 0,
-                "alignOn": "y"
+                "alignOn": "y",
+                "scripts": []
             },
             {
                 "surfaceIndex": 0,
-                "cornerBorderRight":null,
+                "cornerBorderRight": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 555,
@@ -86,16 +88,17 @@
                 "w": 21,
                 "h": 18,
                 "rotation": 0,
-                "alignOn": "x"
+                "alignOn": "x",
+                "scripts": []
             }
         ]
     },
     {
         "type": 2,
-        "objects":[
+        "objects": [
             {
                 "surfaceIndex": 1,
-                "storeBtn":null,
+                "storeBtn": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
@@ -105,7 +108,8 @@
                 "w": 48,
                 "h": 48,
                 "rotation": 0,
-                "onPress":[
+                "scripts": [],
+                "onPress": [
                     "load_map maps/store_level/store_map.json"
                 ],
                 "alignOn": "x"
@@ -114,7 +118,7 @@
     },
     {
         "type": 2.3,
-        "objects":[
+        "objects": [
             {
                 "Description": "Main menu",
                 "surfaceIndex": 2,
@@ -127,6 +131,7 @@
                 "w": 120,
                 "h": 50,
                 "rotation": 0,
+                "scripts": [],
                 "onPress": [
                     "load_map maps/main_menu_level/main_menu_map.json"
                 ],
@@ -145,6 +150,4 @@
             }
         ]
     }
-    
 ]
-    
