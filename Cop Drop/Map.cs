@@ -13,8 +13,9 @@ namespace CopDrop
         List<IntPtr> surfaces = new List<IntPtr>();
         List<Text> textObjects = new List<Text>();
         JArray json;
-        JObject miselaneus;
+        JObject miscellaneous;
 
+        //Reads the provided json then builds the map
         public Map(string jsonPath)
         {
             if (File.Exists(jsonPath))
@@ -24,8 +25,8 @@ namespace CopDrop
 
                 // Parse the JSON content as a dynamic object
                 json = JArray.Parse(jsonContent);
-                // objects used for in general (background color assets to use etc.)
-                miselaneus = (JObject)json[0];
+                // objects used  in general (background color assets to use etc.)
+                miscellaneous = (JObject)json[0];
 
                 mapBuilder();
             }
@@ -41,10 +42,10 @@ namespace CopDrop
             SDL_Rect destinationRect = new SDL_Rect();
             SDL_Color textColor = new SDL_Color();
 
-            var srf = SDL_image.IMG_Load(miselaneus["assetLocation"].ToString());
+            var srf = SDL_image.IMG_Load(miscellaneous["assetLocation"].ToString());
 
-            JArray locationSurfaces = (JArray)miselaneus["assetLocation"];
-            JArray backgroundColor = (JArray)miselaneus["backGroundColor"];
+            JArray locationSurfaces = (JArray)miscellaneous["assetLocation"];
+            JArray backgroundColor = (JArray)miscellaneous["backGroundColor"];
 
             for (int i = 0; i < locationSurfaces.Count; i++)
             {
@@ -258,7 +259,7 @@ namespace CopDrop
 
         public void render()
         {
-            JArray backgroundColor = (JArray)miselaneus["backGroundColor"];
+            JArray backgroundColor = (JArray)miscellaneous["backGroundColor"];
 
             SDL_SetRenderDrawColor(GlobalVariable.Instance.renderer, (byte)backgroundColor[0], (byte)backgroundColor[1], (byte)backgroundColor[2], (byte)backgroundColor[3]);
 

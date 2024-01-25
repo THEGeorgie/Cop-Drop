@@ -1,10 +1,10 @@
-    // A runtime library used for pixel accses
-    global using SDL2;
-    global using static SDL2.SDL;
-    // for displaying dynamic texts
-    global using static SDL2.SDL_ttf;
-    //system claases
-    global using System;
+// A runtime library used for pixel accses
+global using SDL2;
+global using static SDL2.SDL;
+// for displaying dynamic texts
+global using static SDL2.SDL_ttf;
+//system claases
+global using System;
 namespace CopDrop
 {
 
@@ -14,6 +14,7 @@ namespace CopDrop
         int WINDOW_HEIGHT;
         IntPtr window;
 
+        //Creates the window and the renderer window titl, icon and loads in a map
         public Game(int WINDOW_WIDTH, int WINDOW_HEIGHT)
         {
             SDL_Init(SDL_INIT_VIDEO);
@@ -32,6 +33,7 @@ namespace CopDrop
 
         }
 
+        //every specifed amount of time it clears the screeen and re renders the objects
         public void render()
         {
             SDL_RenderClear(GlobalVariable.Instance.renderer);
@@ -39,11 +41,13 @@ namespace CopDrop
             SDL_RenderPresent(GlobalVariable.Instance.renderer);
         }
 
+        //Updates any changes
         public void update()
         {
             MapManager.Instance.Update();
         }
 
+        //After closing the program it releases the memory and closes any open libraries in use
         public void deallocate()
         {
             MapManager.Instance.Discrad();
@@ -51,12 +55,12 @@ namespace CopDrop
             SDL_DestroyWindow(window);
             TTF_CloseFont(GlobalVariable.Instance.font);
 
-
-            //Quits the sdl runtime library && font runtime library
             TTF_Quit();
             SDL_Quit();
         }
 
+        // Listens to any input being made
+        //! this method has to be overhalled
         public bool inputListener()
         {
             SDL_GetMouseState(out int buffer1, out int buffer2);

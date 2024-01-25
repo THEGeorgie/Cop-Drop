@@ -21,7 +21,7 @@ namespace CopDrop
 
         private IntPtr surface;
 
-        // Initalising all of the structs/variable that are passed from the constructor
+        // Initalizing all of the structs/variable that are passed from the constructor
         public Texture(IntPtr surface, int textureWidth, int textureHeight, int rotation)
         {
             this.surface = surface;

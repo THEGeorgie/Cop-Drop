@@ -21,23 +21,24 @@ namespace CopDrop
         private int change;
         private string[] scriptPaths;
         IlinkButtonScripts[] linkButtonScripts;
-        Text text;
+        public Text text;
         public Button(IntPtr surface, int textureWidth, int textureHeight, int rotation, int x, int y, string[] onPress, string[] scriptPaths) : base(surface, textureWidth, textureHeight, rotation)
         {
             transform.x = x;
             transform.y = y;
             this.onPress = onPress;
             change = 0;
-            if (scriptPaths != null){
+            if (scriptPaths != null)
+            {
                 this.scriptPaths = scriptPaths;
                 linkButtonScripts = new IlinkButtonScripts[this.scriptPaths.Length];
                 for (int i = 0; i < this.scriptPaths.Length; i++)
                 {
-                    linkButtonScripts[i] = CreateScriptInstance(this,this.scriptPaths[i]);
+                    linkButtonScripts[i] = CreateScriptInstance(this, this.scriptPaths[i]);
                     linkButtonScripts[i].start();
                 }
             }
-            
+
             // Sets values to array by taking buttons x cord and ads +1 for every pixle of its width same for y and height.
             // This will then calculate the surface of the button plus the cordinate of every pixle 
             buttonAreaPositionX = new int[transform.w];
@@ -57,12 +58,13 @@ namespace CopDrop
             transform.x = x;
             transform.y = y;
             this.text = text;
-            if (scriptPaths != null){
+            if (scriptPaths != null)
+            {
                 this.scriptPaths = scriptPaths;
                 linkButtonScripts = new IlinkButtonScripts[this.scriptPaths.Length];
                 for (int i = 0; i < this.scriptPaths.Length; i++)
                 {
-                    linkButtonScripts[i] = CreateScriptInstance(this,this.scriptPaths[i]);
+                    linkButtonScripts[i] = CreateScriptInstance(this, this.scriptPaths[i]);
                     linkButtonScripts[i].start();
                 }
             }
@@ -90,7 +92,7 @@ namespace CopDrop
 
             this.onPress = onPress;
 
-            
+
         }
         public void showText()
         {
@@ -107,7 +109,7 @@ namespace CopDrop
                 {
                     linkButtonScripts[i].update();
                 }
-                
+
             }
         }
         public void discardText()
@@ -159,50 +161,56 @@ namespace CopDrop
         }
         private IlinkButtonScripts CreateScriptInstance(Button button, string scriptPath)
         {
-            // Assuming your scripts are in the same directory as the executing assembly,
-            // you might need to adjust the path accordingly.
-
-            // Read the script code from the file
-            string scriptCode = System.IO.File.ReadAllText(scriptPath);
-
-            // Compile the script code into an assembly
-            var compilation = CSharpCompilation.Create("ButtonScriptAssembly")
-                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                .AddReferences(AppDomain.CurrentDomain.GetAssemblies().Select(a => MetadataReference.CreateFromFile(a.Location)))
-                .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(scriptCode));
-
-            using (var ms = new System.IO.MemoryStream())
+            try
             {
-                EmitResult result = compilation.Emit(ms);
+                // Read the script code from the file
+                string scriptCode = System.IO.File.ReadAllText(scriptPath);
 
-                if (!result.Success)
+                // Compile the script code into an assembly
+                var compilation = CSharpCompilation.Create("ButtonScriptAssembly")
+                    .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                    .AddReferences(AppDomain.CurrentDomain.GetAssemblies().Select(a => MetadataReference.CreateFromFile(a.Location)))
+                    .AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(scriptCode));
+
+                using (var ms = new System.IO.MemoryStream())
                 {
-                    Console.WriteLine("Script compilation failed:");
-                    foreach (var diagnostic in result.Diagnostics)
+                    EmitResult result = compilation.Emit(ms);
+
+                    if (!result.Success)
                     {
-                        Console.WriteLine(diagnostic);
+                        Console.WriteLine("Script compilation failed:");
+                        foreach (var diagnostic in result.Diagnostics)
+                        {
+                            Console.WriteLine(diagnostic);
+                        }
+                        return null;
                     }
-                    return null;
-                }
 
-                // Load the compiled assembly
-                Assembly assembly = Assembly.Load(ms.ToArray());
+                    // Load the compiled assembly
+                    Assembly assembly = Assembly.Load(ms.ToArray());
 
-                // Find the class that implements IButtonScriptLink
-                var scriptType = assembly.GetTypes()
-                    .FirstOrDefault(t => typeof(IlinkButtonScripts).IsAssignableFrom(t) && t.IsClass);
+                    // Find the class that implements IButtonScriptLink
+                    var scriptType = assembly.GetTypes()
+                        .FirstOrDefault(t => typeof(IlinkButtonScripts).IsAssignableFrom(t) && t.IsClass);
 
-                // If a type is found, create an instance of it, passing the Button instance
-                if (scriptType != null)
-                {
-                    return Activator.CreateInstance(scriptType, button) as IlinkButtonScripts;
-                }
-                else
-                {
-                    Console.WriteLine("No class implementing IlinkButtonScripts found in the compiled assembly.");
-                    return null;
+                    // If a type is found, create an instance of it, passing the Button instance
+                    if (scriptType != null)
+                    {
+                        return Activator.CreateInstance(scriptType, button) as IlinkButtonScripts;
+                    }
+                    else
+                    {
+                        Console.WriteLine("No class implementing IlinkButtonScripts found in the compiled assembly.");
+                        return null;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fatal crash: {ex.Message}");
+                return null;
+            }
+
         }
     }
 

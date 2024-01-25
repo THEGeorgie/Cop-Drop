@@ -13,13 +13,19 @@ public class buttonChangeColor : IlinkButtonScripts
     {
 
     }
-
+    int rndX;
+    int rndY;
     public void update()
     {
         if (button.isButtonPressed())
         {
-            Console.WriteLine("it works!!!!");
-            button.transform.x += 10;
+            rndX = Random.Shared.Next(1,1024 - button.transform.w);
+            rndY = Random.Shared.Next(1,600 - button.transform.h);
+            button.transform.x = rndX;
+            button.text.x = rndX + 15;
+            button.transform.y = rndY;
+            button.text.y = rndY + 15;
+            button.text.update();
         }
     }
 }

@@ -17,8 +17,8 @@
         "type": 1,
         "objects": [
             {
+                "Description": "wallBorderFront",
                 "surfaceIndex": 0,
-                "wallBorderFront": null,
                 "quantity": 6,
                 "margin": 0,
                 "sourceX": 0,
@@ -32,8 +32,8 @@
                 "scripts": []
             },
             {
+                "Description": "wallborderLeft",
                 "surfaceIndex": 0,
-                "wallborderLeft": null,
                 "quantity": 5,
                 "margin": 0,
                 "sourceX": 555,
@@ -47,8 +47,8 @@
                 "scripts": []
             },
             {
+                "Description": "cornerBorderLeft",
                 "surfaceIndex": 0,
-                "cornerBorderLeft": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 555,
@@ -62,8 +62,8 @@
                 "scripts": []
             },
             {
+                "Description": "wallborderRight",
                 "surfaceIndex": 0,
-                "wallborderRight": null,
                 "quantity": 5,
                 "margin": 0,
                 "sourceX": 555,
@@ -77,8 +77,8 @@
                 "scripts": []
             },
             {
+                "Description": "cornerBorderRight",
                 "surfaceIndex": 0,
-                "cornerBorderRight": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 555,
@@ -97,8 +97,8 @@
         "type": 2,
         "objects": [
             {
+                "Description": "storeBtn",
                 "surfaceIndex": 1,
-                "storeBtn": null,
                 "quantity": 1,
                 "margin": 0,
                 "sourceX": 0,
