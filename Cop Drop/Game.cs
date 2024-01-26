@@ -60,7 +60,7 @@ namespace CopDrop
         }
 
         // Listens to any input being made
-        //! this method has to be overhalled
+        //! this method has to be overhalled and depricated
         public bool inputListener()
         {
             SDL_GetMouseState(out int buffer1, out int buffer2);
