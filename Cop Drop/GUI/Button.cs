@@ -252,9 +252,7 @@ namespace CopDrop
 
     }
 
-}
-
-public class commandLine
+    public class commandLine
 {
     private string[] accitonList = { "load_map", "exit", "parse_Jdata" };
     private string[] severd;
@@ -372,5 +370,9 @@ public class commandLine
 
     private static readonly Lazy<commandLine> LazyInstance = new Lazy<commandLine>(() => new commandLine());
 }
+
+}
+
+
 
 
