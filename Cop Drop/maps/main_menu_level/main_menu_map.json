@@ -12,6 +12,26 @@
         ]
     },
     {
+        "type": 1,
+        "objects": [
+            {
+                "Description": "animayionTest",
+                "surfaceIndex": 0,
+                "quantity": 1,
+                "margin": 0,
+                "sourceX": 555,
+                "sourceY": 48,
+                "x": 937,
+                "y": 100,
+                "w": 21,
+                "h": 18,
+                "rotation": 0,
+                "alignOn": "x",
+                "scripts": []
+            }
+        ]
+    },
+    {
         "type": 2.3,
         "objects":[
             {
@@ -38,7 +58,7 @@
                     25,
                     255
                 ],
-                "fontsize": 20,
+                "fontsize": 25,
                 "text": "Play",
                 "textX": 24,
                 "textY": 15,
@@ -69,7 +89,7 @@
                     25,
                     255
                 ],
-                "fontsize": 20,
+                "fontsize": 25,
                 "text": "exit",
                 "textX": 24,
                 "textY": 15,
@@ -89,7 +109,7 @@
                 "h": 50,
                 "rotation": 0,
                 "scripts": [
-                    "scripts/buttonChangeColor.cs"
+                    "D:/Projects/Projects/Cop-Drop/Cop Drop/scripts/buttonChangeColor.cs"
                 ],
                 "onPress": [
                 ],
@@ -99,7 +119,7 @@
                     25,
                     255
                 ],
-                "fontsize": 20,
+                "fontsize": 25,
                 "text": "spokky Button",
                 "textX": 24,
                 "textY": 15,
@@ -136,7 +156,7 @@
                     0,
                     255
                 ],
-                "fontsize": 15,
+                "fontsize": 30,
                 "text": "Created by Gjorgi Danev",
                 "scripts":[
                     

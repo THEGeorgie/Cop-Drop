@@ -22,7 +22,7 @@ namespace CopDrop
             x = 0;
             y = 0;
             rotation = 0;
-            texture = new Texture(surface, fontSize * txt.Length, fontSize, rotation);
+            texture = new Texture(surface, rotation);
             SDL_FreeSurface(surface);
         }
         public void render()

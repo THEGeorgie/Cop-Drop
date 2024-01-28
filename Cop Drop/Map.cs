@@ -1,5 +1,4 @@
 // json library
-using System.Globalization;
 using Newtonsoft.Json.Linq;
 
 namespace CopDrop
@@ -53,7 +52,7 @@ namespace CopDrop
             }
 
 
-            
+
 
             var destinationSurface = IntPtr.Zero;
             int count = 0;
@@ -120,7 +119,7 @@ namespace CopDrop
                                     b = (byte)colorArray[2],
                                     a = (byte)colorArray[3]
                                 };
-                                Console.WriteLine("The text color from map are: "+ colorArray[0] + " " + textColor.g + " "+ textColor.b);
+                                Console.WriteLine("The text color from map are: " + colorArray[0] + " " + textColor.g + " " + textColor.b);
 
                             }
                             switch ((double)type["type"])
@@ -160,11 +159,11 @@ namespace CopDrop
 
                                     if ((char)objects["alignOn"] == 'x')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands,bufferScripts));
+                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, bufferScripts));
                                     }
                                     else if ((char)objects["alignOn"] == 'y')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands,bufferScripts));
+                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, bufferScripts));
                                     }
                                     break;
                                 case 2.3:
@@ -246,6 +245,7 @@ namespace CopDrop
                 {
                     btnObjects[i].discrad();
                     btnObjects[i].discardText();
+                    btnObjects[i].discardScripts();
                 }
             }
             if (textObjects != null)

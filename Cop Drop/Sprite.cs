@@ -17,7 +17,7 @@ namespace CopDrop
         public double rotation = 0.0;
 
         // The point of the texture most often the center cordinantes of the texture
-        private SDL_Point point;
+        public SDL_Point point;
 
         private IntPtr surface;
 
@@ -38,6 +38,30 @@ namespace CopDrop
 
             transformSurface.w = surfaceInfo.w;
             transformSurface.h = surfaceInfo.h;
+            transformSurface.x = 0;
+            transformSurface.y = 0;
+        }
+        //!NOT TO BE USED FOR TEXTURE THAT REQUIRE A SPECIAL WIDTH AND HEIGHT ie. sprites
+        //mainly used for text rendering
+         public Texture(IntPtr surface, int rotation)
+        {
+            int textureWidth;
+            int textureHeight;
+
+            this.surface = surface;
+            this.rotation = rotation;
+            texture = SDL_CreateTextureFromSurface(GlobalVariable.Instance.renderer, surface);
+            SDL_QueryTexture(texture, out _,  out _, out textureWidth, out textureHeight);
+            point.x = textureWidth / 2;
+            point.y = textureHeight / 2;
+
+            transform.w = textureWidth;
+            transform.h = textureHeight;
+            transform.x = 0;
+            transform.y = 0;
+
+            transformSurface.w = textureWidth;
+            transformSurface.h = textureHeight;
             transformSurface.x = 0;
             transformSurface.y = 0;
         }
