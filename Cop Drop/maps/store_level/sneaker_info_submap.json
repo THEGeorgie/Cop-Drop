@@ -29,7 +29,7 @@
         "h": 48,
         "rotation": 0,
         "alignOn": "x",
-        "scripts": []
+        "script": null
       },
       {
         "Description": "sneaker",
@@ -44,7 +44,7 @@
         "h": 108,
         "rotation": 0,
         "alignOn": "x",
-        "scripts": []
+        "script": null
       }
     ]
   },
@@ -63,7 +63,7 @@
         "w": 48,
         "h": 48,
         "rotation": 0,
-        "scripts": [],
+        "script": null,
         "onPress": [
           "load_map maps/store_level/store_map.json"
         ],

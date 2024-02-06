@@ -42,7 +42,7 @@ namespace CopDrop
             transformSurface.y = 0;
         }
         //!NOT TO BE USED FOR TEXTURE THAT REQUIRE A SPECIAL WIDTH AND HEIGHT ie. sprites
-        //mainly used for text rendering
+        //*mainly used for text rendering
          public Texture(IntPtr surface, int rotation)
         {
             int textureWidth;

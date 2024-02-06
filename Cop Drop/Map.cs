@@ -1,5 +1,8 @@
 // json library
+using System.Data.Entity.Infrastructure;
 using Newtonsoft.Json.Linq;
+//assembley
+using System.Reflection;
 
 namespace CopDrop
 {
@@ -142,53 +145,81 @@ namespace CopDrop
                                 case 2:
                                     //There is a convertion from 
                                     JArray commandList = (JArray)objects["onPress"];
-                                    JArray scriptList = (JArray)objects["scripts"];
 
                                     string[] bufferCommands = new string[commandList.Count];
-                                    string[] bufferScripts = new string[scriptList.Count];
 
                                     for (int i = 0; i < commandList.Count; i++)
                                     {
                                         bufferCommands[i] = (string)commandList[i];
                                     }
-                                    for (int i = 0; i < scriptList.Count; i++)
-                                    {
-                                        bufferScripts[i] = (string)scriptList[i];
-                                    }
+
 
 
                                     if ((char)objects["alignOn"] == 'x')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, bufferScripts));
+                                        if ((string)objects["script"] != null)
+                                        {
+                                            ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                        }
+                                        else
+                                        {
+                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, null));
+                                        }
                                     }
                                     else if ((char)objects["alignOn"] == 'y')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, bufferScripts));
+
+                                        if ((string)objects["script"] != null)
+                                        {
+                                            ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+
+                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+
+                                        }
+                                        else
+                                        {
+                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, null));
+                                        }
                                     }
                                     break;
                                 case 2.3:
                                     JArray commandList1 = (JArray)objects["onPress"];
-                                    JArray scriptList1 = (JArray)objects["scripts"];
                                     string[] bufferCommands1 = new string[commandList1.Count];
-                                    string[] bufferScripts1 = new string[scriptList1.Count];
 
                                     for (int i = 0; i < commandList1.Count; i++)
                                     {
                                         bufferCommands1[i] = (string)commandList1[i];
                                     }
-                                    for (int i = 0; i < scriptList1.Count; i++)
-                                    {
-                                        bufferScripts1[i] = (string)scriptList1[i];
-                                    }
+
 
                                     Text txt = new Text((string)objects["text"], (int)objects["fontsize"], textColor);
                                     if ((char)objects["alignOn"] == 'x')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, bufferScripts1));
+                                        if ((string)objects["script"] != null)
+                                        {
+                                            ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+
+                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                        }
+                                        else
+                                        {
+                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, null));
+                                        }
                                     }
                                     else if ((char)objects["alignOn"] == 'y')
                                     {
-                                        btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, bufferScripts1));
+
+                                        if ((string)objects["script"] != null)
+                                        {
+                                            ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+
+                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                        }
+                                        else
+                                        {
+                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, null));
+                                        }
                                     }
                                     break;
                                 case 3:
@@ -214,6 +245,23 @@ namespace CopDrop
             }
         }
 
+        static IlinkButtonScripts loadScript(string assemblyPath, string className)
+        {
+            Assembly assembly = Assembly.LoadFrom(assemblyPath);
+            Type type = assembly.GetType(className);
+
+            if (type == null)
+            {
+                throw new InvalidOperationException("Class not found in the specified assembly.");
+            }
+
+            if (!typeof(IlinkButtonScripts).IsAssignableFrom(type))
+            {
+                throw new InvalidOperationException("Class does not implement ICustomBehavior interface.");
+            }
+
+            return (IlinkButtonScripts)Activator.CreateInstance(type);
+        }
 
 
         public void update()
@@ -245,7 +293,6 @@ namespace CopDrop
                 {
                     btnObjects[i].discrad();
                     btnObjects[i].discardText();
-                    btnObjects[i].discardScripts();
                 }
             }
             if (textObjects != null)
@@ -291,33 +338,67 @@ namespace CopDrop
 
     public class MapManager
     {
-        public Map currentMap;
-
+        private List<Map> savedMaps = new List<Map>();
+        Map loadedMap;
+        bool isMapSaved;
         public void LoadMap(Map map)
         {
             // Load the new map
-            if (currentMap != null)
+
+            if (savedMaps != null || savedMaps.Count != 0)
             {
-                currentMap.discrad();
+
+                for (int i = 0; i < savedMaps.Count; i++)
+                {
+                    if (savedMaps[i] == map)
+                    {
+                        isMapSaved = true;
+                        loadedMap = savedMaps[i];
+                    }
+                }
+                if (isMapSaved == false)
+                {
+                    savedMaps.Add(map);
+                    for (int i = 0; i < savedMaps.Count; i++)
+                    {
+                        if (savedMaps[i] == map)
+                        {
+                            loadedMap = savedMaps[i];
+                            Console.WriteLine("Map loaded from savedMaps");
+                        }
+                    }
+                }
+
+
             }
-            currentMap = map;
+            else
+            {
+                savedMaps.Add(map);
+                loadedMap = map;
+            }
+            Console.WriteLine("Thre are: " + savedMaps.Count + " saved");
+
+
         }
 
         public void Update()
         {
             // Update logic for the current map
-            currentMap.update();
+            loadedMap.update();
         }
 
         public void Discrad()
         {
-            currentMap.discrad();
+            for (int i = 0; i < savedMaps.Count; i++)
+            {
+                savedMaps[i].discrad();
+            }
         }
 
         public void Render()
         {
             // Render the current map
-            currentMap.render();
+            loadedMap.render();
         }
         public static MapManager Instance
         {

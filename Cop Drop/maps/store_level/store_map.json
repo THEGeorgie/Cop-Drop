@@ -29,7 +29,7 @@
                 "h": 48,
                 "rotation": 0,
                 "alignOn": "x",
-                "scripts":[]
+                "script": null
             }
         ]
     },
@@ -48,7 +48,7 @@
                 "w": 48,
                 "h": 48,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "load_map maps/main_level/main_map.json"
                 ],
@@ -66,7 +66,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -85,7 +85,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:117>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -104,7 +104,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:235>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -123,7 +123,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -142,7 +142,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -161,7 +161,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:117>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -180,7 +180,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:235>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -199,7 +199,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -218,7 +218,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -237,7 +237,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:117>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -256,7 +256,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:235>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
@@ -275,7 +275,7 @@
                 "w": 117,
                 "h": 108,
                 "rotation": 0,
-                "scripts":[],
+                "script": null,
                 "onPress": [
                     "parse_Jdata (maps/store_level/sneaker_info_submap.json)<(Description:sneaker)sourceX:0>",
                     "load_map maps/store_level/sneaker_info_submap.json"  
