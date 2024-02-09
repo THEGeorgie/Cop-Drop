@@ -1,17 +1,15 @@
 namespace CopDrop
 {
-    public interface IlinkButtonScripts : IDisposable
+    public interface IlinkButtonScripts
     {
         void start();
         void update();
-        void cleanup();
     }
 
-    public interface IlinkTextureScripts : IDisposable
+    public interface IlinkTextureScripts
     {
         void start();
         void update();
-        void cleanup();
     }
 }
 

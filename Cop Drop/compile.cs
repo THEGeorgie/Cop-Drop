@@ -1,20 +1,17 @@
-using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using Microsoft.CSharp;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
 
 namespace CopDrop
 {
     public class ScriptCompiler
     {
         private string code;
+        private string codeScriptLink;
         private string dllName;
         private string scriptClassName;
         private string dllPath;
+        //The cs file with the interface
+        private string linkScriptPath;
         public string DllPath
         {
             get { return dllPath; }
@@ -25,117 +22,106 @@ namespace CopDrop
         }
         public ScriptCompiler(string CSpath)
         {
-            if (File.Exists(CSpath))
+            linkScriptPath = "D:/Projects/Projects/Cop-Drop/Cop Drop/linkScripts.cs";
+            if (File.Exists(CSpath) && File.Exists(linkScriptPath))
             {
+
                 code = File.ReadAllText(CSpath);
+                codeScriptLink = File.ReadAllText(linkScriptPath);
                 dllName = Path.GetFileName(CSpath).Remove(Path.GetFileName(CSpath).Length - 3);
+                dllPath = "scripts/dlls/" + dllName + ".dll";
+                if (File.Exists(dllPath))
+                {
+                    Console.WriteLine("dll file alredy exists");
+                }
+                else
+                {
+                    DLLcompiler();
+                }
+                scriptClassName = GetClassName();
+
             }
-            scriptClassName = GetClassName();
-            DLLcompiler();
+            else
+            {
+                Console.WriteLine(CSpath);
+                Console.WriteLine("Paths are incorect");
+            }
 
-        }
-        static string CompileCode(string code)
-        {
-            string directoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            Directory.CreateDirectory(directoryPath);
-
-            string filePath = Path.Combine(directoryPath, "CustomBehavior.cs");
-            File.WriteAllText(filePath, code);
-
-            ExecuteCommand("dotnet", $"new classlib -n CustomBehavior -o {directoryPath}");
-            ExecuteCommand("dotnet", $"build {filePath}");
-
-            return Path.Combine(directoryPath, "bin", "Debug", "netstandard2.0", "CustomBehavior.dll");
         }
         // compiles .cs files to dll files
         public void DLLcompiler()
         {
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
+            SyntaxTree syntaxTreeInterfaceLinkScript = CSharpSyntaxTree.ParseText(codeScriptLink);
 
-            string assemblyName = Path.GetRandomFileName();
-            MetadataReference[] references = new MetadataReference[]
-            {
-            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(IlinkButtonScripts).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(DefaultBehavior).Assembly.Location)
-            };
+
+            // Define compilation options
+            CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+
+            // Define the compilation
 
             CSharpCompilation compilation = CSharpCompilation.Create(
-                assemblyName,
+                Path.GetFileNameWithoutExtension(dllPath),
                 syntaxTrees: new[] { syntaxTree },
-                references: references,
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+                references: GetMetadataReferences(),
+                options: compilationOptions);
 
-            using (MemoryStream ms = new MemoryStream())
+            // Perform the compilation
+            using (var ms = new MemoryStream())
             {
-                EmitResult result = compilation.Emit(ms);
+                var result = compilation.Emit(ms);
 
                 if (!result.Success)
                 {
-                    foreach (Diagnostic diagnostic in result.Diagnostics)
+                    Console.WriteLine("Compilation failed:");
+                    foreach (var diagnostic in result.Diagnostics)
                     {
-                        Console.WriteLine($"{diagnostic.Id}: {diagnostic.GetMessage()}");
+                        Console.WriteLine(diagnostic);
                     }
-                    throw new InvalidOperationException("Failed to compile code.");
                 }
-
-                string filePath = Path.Combine(Path.GetTempPath(), $"{assemblyName}.dll");
-                File.WriteAllBytes(filePath, ms.ToArray());
-                dllPath = filePath;
+                else
+                {
+                    // Write the compiled bytes to the output DLL file
+                    File.WriteAllBytes(dllPath, ms.ToArray());
+                    Console.WriteLine($"Compilation successful. Output DLL: {dllPath}");
+                }
             }
         }
+        MetadataReference[] GetMetadataReferences()
+        {
+            var references = new List<MetadataReference>();
 
-            private string GetClassName()
+            // Add references to required assemblies
+            references.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile("Cop Drop.dll"));
+            return references.ToArray();
+        }
+
+        private string GetClassName()
+        {
+            // Split code by lines
+            string[] lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Find the line containing "public class" and extract class name
+            string classNameLine = lines.FirstOrDefault(line => line.Trim().StartsWith("public class"));
+            if (classNameLine != null)
             {
-                Console.WriteLine(code);
-                // Split code by lines
-                string[] lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
-                // Find the line containing "public class" and extract class name
-                string classNameLine = lines.FirstOrDefault(line => line.Trim().StartsWith("public class"));
-                if (classNameLine != null)
+                int startIndex = classNameLine.IndexOf("class") + 6;
+                int endIndex = classNameLine.IndexOf(":", startIndex);
+                if (endIndex == -1)
                 {
-                    int startIndex = classNameLine.IndexOf("class") + 6;
-                    int endIndex = classNameLine.IndexOf(":", startIndex);
-                    if (endIndex == -1)
-                    {
-                        endIndex = classNameLine.IndexOf("{", startIndex);
-                    }
-                    string className = classNameLine.Substring(startIndex, endIndex - startIndex).Trim();
-                    return className;
+                    endIndex = classNameLine.IndexOf("{", startIndex);
                 }
-
-                throw new InvalidOperationException("Failed to determine class name.");
+                string className = classNameLine.Substring(startIndex, endIndex - startIndex).Trim();
+                Console.WriteLine(className);
+                return className;
             }
 
-            static void ExecuteCommand(string command, string arguments)
-            {
-                Process process = new Process();
-                process.StartInfo.FileName = command;
-                process.StartInfo.Arguments = arguments;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.CreateNoWindow = true;
-                process.Start();
-
-                process.WaitForExit();
-                string output = process.StandardOutput.ReadToEnd();
-                string error = process.StandardError.ReadToEnd();
-
-                if (!string.IsNullOrEmpty(output))
-                {
-                    Console.WriteLine(output);
-                }
-
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Console.WriteLine(error);
-                }
-            }
-
+            throw new InvalidOperationException("Failed to determine class name.");
         }
 
     }
+
+}
 

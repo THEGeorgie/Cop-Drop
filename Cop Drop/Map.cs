@@ -1,5 +1,4 @@
 // json library
-using System.Data.Entity.Infrastructure;
 using Newtonsoft.Json.Linq;
 //assembley
 using System.Reflection;
@@ -34,6 +33,7 @@ namespace CopDrop
             }
             else
             {
+                Console.WriteLine(jsonPath);
                 Console.WriteLine("The JSON file does not exist.");
             }
         }
@@ -122,8 +122,6 @@ namespace CopDrop
                                     b = (byte)colorArray[2],
                                     a = (byte)colorArray[3]
                                 };
-                                Console.WriteLine("The text color from map are: " + colorArray[0] + " " + textColor.g + " " + textColor.b);
-
                             }
                             switch ((double)type["type"])
                             {
@@ -199,7 +197,6 @@ namespace CopDrop
                                         if ((string)objects["script"] != null)
                                         {
                                             ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-
                                             btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
                                         }
                                         else
@@ -213,7 +210,6 @@ namespace CopDrop
                                         if ((string)objects["script"] != null)
                                         {
                                             ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-
                                             btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
                                         }
                                         else
@@ -245,24 +241,31 @@ namespace CopDrop
             }
         }
 
-        static IlinkButtonScripts loadScript(string assemblyPath, string className)
+        private static IlinkButtonScripts loadScript(string assemblyPath, string className)
         {
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
-            Type type = assembly.GetType(className);
+            //diagnostics
+            var types = assembly.GetTypes();
+
+            foreach (var item in types)
+            {
+                Console.WriteLine(item);
+            }
+
+            Type type = assembly.GetType("CopDrop." + className);
 
             if (type == null)
             {
                 throw new InvalidOperationException("Class not found in the specified assembly.");
             }
-
-            if (!typeof(IlinkButtonScripts).IsAssignableFrom(type))
+            if (!typeof(CopDrop.IlinkButtonScripts)!.IsAssignableFrom(type))
             {
-                throw new InvalidOperationException("Class does not implement ICustomBehavior interface.");
+                throw new InvalidOperationException("Class does not implement IlinkButtonScripts interface.");
             }
 
             return (IlinkButtonScripts)Activator.CreateInstance(type);
-        }
 
+        }
 
         public void update()
         {
@@ -376,7 +379,7 @@ namespace CopDrop
                 savedMaps.Add(map);
                 loadedMap = map;
             }
-            Console.WriteLine("Thre are: " + savedMaps.Count + " saved");
+            //Console.WriteLine("Thre are: " + savedMaps.Count + " saved");
 
 
         }

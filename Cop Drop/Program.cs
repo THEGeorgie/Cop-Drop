@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace CopDrop
 {
-    
+
     class Program
     {
         public static int Main()
@@ -48,12 +48,12 @@ namespace CopDrop
         public int mouseX { get; set; }
         public int mouseY { get; set; }
         public int mouseButtonClick { get; set; }
-        public IntPtr font = TTF_OpenFont("font.otf", 13);
+        public IntPtr font;
         public IntPtr renderer;
 
         public SDL_Event ev;
 
-        public bool exit {get; set;}
+        public bool exit { get; set; }
 
         public Mouse mouse;
 
@@ -64,12 +64,13 @@ namespace CopDrop
             mouseX = 42;
             mouseY = 42;
             mouseButtonClick = 0;
+            font = TTF_OpenFont("font.otf", 13);
             if (font == null)
             {
                 Console.WriteLine("Failed to load font: %s", SDL_GetError());
             }
         }
-        
+
         public bool GetKey(SDL.SDL_Keycode _keycode)
         {
             int arraySize;
@@ -86,13 +87,9 @@ namespace CopDrop
         {
             get
             {
-                if (instance == null)
-                {
-                    instance = new GlobalVariable();
-                }
-                return instance;
+                return LazyInstance.Value;
             }
         }
-
+        private static readonly Lazy<GlobalVariable> LazyInstance = new Lazy<GlobalVariable>(() => new GlobalVariable());
     }
 }

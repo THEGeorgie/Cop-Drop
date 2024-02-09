@@ -1,10 +1,10 @@
 // A runtime library used for pixel accses
 global using SDL2;
+//system claases
+global using System;
 global using static SDL2.SDL;
 // for displaying dynamic texts
 global using static SDL2.SDL_ttf;
-//system claases
-global using System;
 namespace CopDrop
 {
 
@@ -23,7 +23,6 @@ namespace CopDrop
             this.WINDOW_HEIGHT = WINDOW_HEIGHT;
             this.WINDOW_WIDTH = WINDOW_WIDTH;
             var surface = SDL_image.IMG_Load("maps/main_level/assets/stockXIcon.png");
-
             SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN, out window, out GlobalVariable.Instance.renderer);
             SDL.SDL_RenderSetLogicalSize(GlobalVariable.Instance.renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
             SDL_SetWindowTitle(window, "Cop Drop");

@@ -29,7 +29,8 @@ namespace CopDrop
         {
             texture.show();
         }
-        public Text deepCopy(){
+        public Text deepCopy()
+        {
             Text deepCopy = new Text(txt, fontSize, fg);
             return deepCopy;
         }

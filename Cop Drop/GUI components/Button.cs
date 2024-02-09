@@ -1,15 +1,4 @@
-using System.Drawing;
-using System.Dynamic;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
 
 
 namespace CopDrop
@@ -20,7 +9,6 @@ namespace CopDrop
         int[] buttonAreaPositionY;
         public string[] onPress;
         private int change;
-        private string[] scriptPaths;
 
         IlinkButtonScripts customScript;
         public Text text;
