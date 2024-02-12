@@ -240,8 +240,8 @@ namespace CopDrop
                 throw;
             }
         }
-
-        private static IlinkButtonScripts loadScript(string assemblyPath, string className)
+        //Script loading methods
+        private static IlinkButtonScripts loadScriptBTN(string assemblyPath, string className)
         {
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
             //diagnostics
@@ -264,6 +264,58 @@ namespace CopDrop
             }
 
             return (IlinkButtonScripts)Activator.CreateInstance(type);
+
+        }
+
+        private static IlinkPlayerScripts loadScriptPLA(string assemblyPath, string className)
+        {
+            Assembly assembly = Assembly.LoadFrom(assemblyPath);
+            //diagnostics
+            var types = assembly.GetTypes();
+
+            foreach (var item in types)
+            {
+                Console.WriteLine(item);
+            }
+
+            Type type = assembly.GetType("CopDrop." + className);
+
+            if (type == null)
+            {
+                throw new InvalidOperationException("Class not found in the specified assembly.");
+            }
+            if (!typeof(CopDrop.IlinkPlayerScripts)!.IsAssignableFrom(type))
+            {
+                throw new InvalidOperationException("Class does not implement IlinkButtonScripts interface.");
+            }
+
+            return (IlinkPlayerScripts)Activator.CreateInstance(type);
+
+        }
+
+        private static IlinkTextureScripts loadScriptTEX(string assemblyPath, string className)
+        {
+            Assembly assembly = Assembly.LoadFrom(assemblyPath);
+            //diagnostics
+            var types = assembly.GetTypes();
+
+            foreach (var item in types)
+            {
+                Console.WriteLine(item);
+            }
+
+            Type type = assembly.GetType("CopDrop." + className);
+
+            if (type == null)
+            {
+                throw new InvalidOperationException("Class not found in the specified assembly.");
+            }
+            if (!typeof(CopDrop.IlinkTextureScripts)!.IsAssignableFrom(type))
+            {
+                throw new InvalidOperationException("Class does not implement IlinkButtonScripts interface.");
+            }
+
+            return (IlinkTextureScripts)Activator.CreateInstance(type);
 
         }
 

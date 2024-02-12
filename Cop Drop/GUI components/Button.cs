@@ -19,10 +19,6 @@ namespace CopDrop
             this.onPress = onPress;
             change = 0;
             this.customScript = customScript;
-            if (customScript != null)
-            {
-                customScript.start();
-            }
 
             // Sets values to array by taking buttons x cord and ads +1 for every pixle of its width same for y and height.
             // This will then calculate the surface of the button plus the cordinate of every pixle 
@@ -36,6 +32,13 @@ namespace CopDrop
             {
                 buttonAreaPositionY[i] = transform.y + i;
             }
+
+            if (customScript != null)
+            {
+                customScript.loadButton(this);
+
+                customScript.start();
+            }
         }
         public Button(IntPtr surface, int textureWidth, int textureHeight, int rotation, Text text, int textX, int textY, int x, int y, string[] onPress, IlinkButtonScripts customScript) : base(surface, textureWidth, textureHeight, rotation)
         {
@@ -46,10 +49,6 @@ namespace CopDrop
 
             this.customScript = customScript;
 
-            if (customScript != null)
-            {
-                customScript.start();
-            }
 
             //makes the position of the text relative to the position of the button and not on the whole window
             if (textX <= transform.w)
@@ -74,7 +73,12 @@ namespace CopDrop
 
             this.onPress = onPress;
 
+            if (customScript != null)
+            {
+                customScript.loadButton(this);
 
+                customScript.start();
+            }
         }
         ~Button()
         {
