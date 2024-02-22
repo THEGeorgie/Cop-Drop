@@ -1,6 +1,6 @@
 ﻿namespace CopDrop
 {
-    public class collision
+    public class Collision
     {
 
     }

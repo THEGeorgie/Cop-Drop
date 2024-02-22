@@ -12,7 +12,6 @@ namespace CopDrop
             const int frameDelay = 1000 / FPS;
 
             UInt32 frameStart;
-            int frameTime;
 
             Game game = new Game(1024, 600);
 
@@ -20,7 +19,7 @@ namespace CopDrop
             while (loop)
             {
                 frameStart = SDL_GetTicks();
-
+                Console.WriteLine(GlobalVariable.Instance.frameTime);
                 if (game.inputListener() || GlobalVariable.Instance.exit)
                 {
                     loop = false;
@@ -28,11 +27,11 @@ namespace CopDrop
                 game.update();
                 game.render();
 
-                frameTime = (int)(SDL_GetTicks() - frameStart);
+                GlobalVariable.Instance.frameTime = (int)(SDL_GetTicks() - frameStart);
 
-                if (frameDelay > frameTime)
+                if (frameDelay > GlobalVariable.Instance.frameTime)
                 {
-                    SDL_Delay((uint)(frameDelay - frameTime));
+                    SDL_Delay((uint)(frameDelay - GlobalVariable.Instance.frameTime));
                 }
             }
             game.deallocate();
@@ -50,7 +49,7 @@ namespace CopDrop
         public int mouseButtonClick { get; set; }
         public IntPtr font;
         public IntPtr renderer;
-
+        public int frameTime;
         public SDL_Event ev;
 
         public bool exit { get; set; }

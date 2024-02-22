@@ -52,8 +52,6 @@ namespace CopDrop
         public void DLLcompiler()
         {
             SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
-            SyntaxTree syntaxTreeInterfaceLinkScript = CSharpSyntaxTree.ParseText(codeScriptLink);
-
 
             // Define compilation options
             CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);

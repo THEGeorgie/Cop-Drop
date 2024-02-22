@@ -13,6 +13,7 @@ namespace CopDrop
         List<Button> btnObjects = new List<Button>();
         List<IntPtr> surfaces = new List<IntPtr>();
         List<Text> textObjects = new List<Text>();
+        List<Player> playerObjects = new List<Player>();
         JArray json;
         JObject miscellaneous;
 
@@ -44,8 +45,6 @@ namespace CopDrop
             SDL_Rect destinationRect = new SDL_Rect();
             SDL_Color textColor = new SDL_Color();
 
-            var srf = SDL_image.IMG_Load(miscellaneous["assetLocation"].ToString());
-
             JArray locationSurfaces = (JArray)miscellaneous["assetLocation"];
             JArray backgroundColor = (JArray)miscellaneous["backGroundColor"];
 
@@ -53,10 +52,6 @@ namespace CopDrop
             {
                 surfaces.Add(SDL_image.IMG_Load(locationSurfaces[i].ToString()));
             }
-
-
-
-
             var destinationSurface = IntPtr.Zero;
             int count = 0;
             try
@@ -69,8 +64,10 @@ namespace CopDrop
                     {
                         foreach (var objects in type["objects"])
                         {
-                            if ((int)type["type"] == 1 || (int)type["type"] == 2)
+                            //Creating reqquired configs for object instanciation
+                            if ((int)type["type"] == 1)
                             {
+
                                 // menas if it has multiple surfaces in one row it combines it into one texture
                                 if ((char)objects["alignOn"] == 'x')
                                 {
@@ -112,6 +109,7 @@ namespace CopDrop
 
                                 }
                             }
+                            //Creating reqquired configs for object instanciation
                             else if ((int)type["type"] == 3 || (double)type["type"] == 2.3)
                             {
                                 JArray colorArray = (JArray)objects["color"];
@@ -123,10 +121,11 @@ namespace CopDrop
                                     a = (byte)colorArray[3]
                                 };
                             }
+
                             switch ((double)type["type"])
                             {
                                 // 1 means its a texture object 
-                                case 1:
+                                case 1.0:
                                     if ((char)objects["alignOn"] == 'x')
                                     {
                                         spriteObjects.Add(new Texture(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"]));
@@ -140,7 +139,7 @@ namespace CopDrop
                                     spriteObjects[count].transform.y = (int)objects["y"];
                                     break;
                                 // 2 means its a button object 
-                                case 2:
+                                case 2.0:
                                     //There is a convertion from 
                                     JArray commandList = (JArray)objects["onPress"];
 
@@ -151,36 +150,18 @@ namespace CopDrop
                                         bufferCommands[i] = (string)commandList[i];
                                     }
 
-
-
-                                    if ((char)objects["alignOn"] == 'x')
+                                    if ((string)objects["script"] != null)
                                     {
-                                        if ((string)objects["script"] != null)
-                                        {
-                                            ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
-                                        }
-                                        else
-                                        {
-                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, null));
-                                        }
+                                        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                                        btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, loadScriptBTN(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
                                     }
-                                    else if ((char)objects["alignOn"] == 'y')
+                                    else
                                     {
-
-                                        if ((string)objects["script"] != null)
-                                        {
-                                            ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-
-                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
-
-                                        }
-                                        else
-                                        {
-                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, null));
-                                        }
+                                        btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, null));
                                     }
+
                                     break;
+                                //means its a button with text
                                 case 2.3:
                                     JArray commandList1 = (JArray)objects["onPress"];
                                     string[] bufferCommands1 = new string[commandList1.Count];
@@ -192,39 +173,38 @@ namespace CopDrop
 
 
                                     Text txt = new Text((string)objects["text"], (int)objects["fontsize"], textColor);
-                                    if ((char)objects["alignOn"] == 'x')
-                                    {
-                                        if ((string)objects["script"] != null)
-                                        {
-                                            ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
-                                        }
-                                        else
-                                        {
-                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, null));
-                                        }
-                                    }
-                                    else if ((char)objects["alignOn"] == 'y')
-                                    {
 
-                                        if ((string)objects["script"] != null)
-                                        {
-                                            ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScript(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
-                                        }
-                                        else
-                                        {
-                                            btnObjects.Add(new Button(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, null));
-                                        }
+                                    if ((string)objects["script"] != null)
+                                    {
+                                        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                                        btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScriptBTN(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                    }
+                                    else
+                                    {
+                                        btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, null));
                                     }
                                     break;
-                                case 3:
+                                // means its a text object
+                                case 4.0:
                                     textObjects.Add(new Text((string)objects["text"], (int)objects["fontsize"], textColor));
                                     Console.WriteLine(count);
                                     textObjects[count].x = (int)objects["x"];
                                     textObjects[count].y = (int)objects["y"];
                                     textObjects[count].update();
                                     break;
+                                // means its a player object
+                                //case 4.0:
+                                //    Console.WriteLine("There is ap lyer object ");
+                                //    if ((string)objects["script"] != null)
+                                //    {
+                                //        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                                //        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptPLA(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                //    }
+                                //    else
+                                //    {
+                                //        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null));
+                                //    }
+                                //    break;
                                 default:
                                     break;
                             }
@@ -332,6 +312,10 @@ namespace CopDrop
                     }
                 }
             }
+            for (int i = 0; i < playerObjects.Count; i++)
+            {
+                playerObjects[i].update();
+            }
         }
         public void discrad()
         {
@@ -340,6 +324,13 @@ namespace CopDrop
                 for (int i = 0; i < spriteObjects.Count; i++)
                 {
                     spriteObjects[i].discrad();
+                }
+            }
+            if (playerObjects != null)
+            {
+                for (int i = 0; i < playerObjects.Count; i++)
+                {
+                    playerObjects[i].discrad();
                 }
             }
             if (btnObjects != null)
@@ -378,6 +369,13 @@ namespace CopDrop
                 {
                     btnObjects[i].show();
                     btnObjects[i].showText();
+                }
+            }
+            if (playerObjects != null)
+            {
+                for (int i = 0; i < playerObjects.Count; i++)
+                {
+                    playerObjects[i].show();
                 }
             }
             if (textObjects != null)
