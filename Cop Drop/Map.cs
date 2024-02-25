@@ -185,7 +185,7 @@ namespace CopDrop
                                     }
                                     break;
                                 // means its a text object
-                                case 4.0:
+                                case 3.0:
                                     textObjects.Add(new Text((string)objects["text"], (int)objects["fontsize"], textColor));
                                     Console.WriteLine(count);
                                     textObjects[count].x = (int)objects["x"];
@@ -193,18 +193,18 @@ namespace CopDrop
                                     textObjects[count].update();
                                     break;
                                 // means its a player object
-                                //case 4.0:
-                                //    Console.WriteLine("There is ap lyer object ");
-                                //    if ((string)objects["script"] != null)
-                                //    {
-                                //        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                //        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptPLA(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
-                                //    }
-                                //    else
-                                //    {
-                                //        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null));
-                                //    }
-                                //    break;
+                                case 4.0:
+                                    Console.WriteLine("There is ap lyer object ");
+                                    if ((string)objects["script"] != null)
+                                    {
+                                        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                                        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptPLA(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                    }
+                                    else
+                                    {
+                                        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null));
+                                    }
+                                    break;
                                 default:
                                     break;
                             }
@@ -218,6 +218,22 @@ namespace CopDrop
             {
                 Console.WriteLine("An error occurred while building the map. Most likely, it's a JSON problem.");
                 throw;
+            }
+        }
+        void DeleteDllFiles(string folderPath)
+        {
+            try
+            {
+                string[] files = Directory.GetFiles(folderPath, "*.dll");
+                foreach (string file in files)
+                {
+                    File.Delete(file);
+                    Console.WriteLine($"Deleted file: {file}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
         }
         //Script loading methods
@@ -348,6 +364,10 @@ namespace CopDrop
                     textObjects[i].dealocate();
                 }
             }
+
+            string folderPath = @"scripts/dlls/"; // Specify the path of the folder
+
+            DeleteDllFiles(folderPath);
         }
 
         public void render()

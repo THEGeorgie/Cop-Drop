@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace CopDrop
 {
 
@@ -8,7 +6,7 @@ namespace CopDrop
         public static int Main()
         {
 
-            const int FPS = 30;
+            const int FPS = 60;
             const int frameDelay = 1000 / FPS;
 
             UInt32 frameStart;
@@ -19,8 +17,7 @@ namespace CopDrop
             while (loop)
             {
                 frameStart = SDL_GetTicks();
-                Console.WriteLine(GlobalVariable.Instance.frameTime);
-                if (game.inputListener() || GlobalVariable.Instance.exit)
+                if (GlobalVariable.Instance.exit)
                 {
                     loop = false;
                 }
@@ -50,7 +47,8 @@ namespace CopDrop
         public IntPtr font;
         public IntPtr renderer;
         public int frameTime;
-        public SDL_Event ev;
+
+        public keybaordEvent keybaordEvent;
 
         public bool exit { get; set; }
 
@@ -60,6 +58,9 @@ namespace CopDrop
         {
             // Initialize your global variable here
             mouse = new Mouse();
+            keybaordEvent = new keybaordEvent();
+
+
             mouseX = 42;
             mouseY = 42;
             mouseButtonClick = 0;
@@ -70,17 +71,7 @@ namespace CopDrop
             }
         }
 
-        public bool GetKey(SDL.SDL_Keycode _keycode)
-        {
-            int arraySize;
-            bool isKeyPressed = false;
-            IntPtr origArray = SDL.SDL_GetKeyboardState(out arraySize);
-            byte[] keys = new byte[arraySize];
-            byte keycode = (byte)SDL.SDL_GetScancodeFromKey(_keycode);
-            Marshal.Copy(origArray, keys, 0, arraySize);
-            isKeyPressed = keys[keycode] == 1;
-            return isKeyPressed;
-        }
+
 
         public static GlobalVariable Instance
         {

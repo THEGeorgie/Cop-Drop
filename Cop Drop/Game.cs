@@ -5,6 +5,7 @@ global using System;
 global using static SDL2.SDL;
 // for displaying dynamic texts
 global using static SDL2.SDL_ttf;
+
 namespace CopDrop
 {
 
@@ -44,7 +45,9 @@ namespace CopDrop
         public void update()
         {
             MapManager.Instance.Update();
+            GlobalVariable.Instance.keybaordEvent.inputListener();
         }
+
 
         //After closing the program it releases the memory and closes any open libraries in use
         public void deallocate()
@@ -60,33 +63,7 @@ namespace CopDrop
 
         // Listens to any input being made
         //! this method has to be overhalled and depricated
-        public bool inputListener()
-        {
-            SDL_GetMouseState(out int buffer1, out int buffer2);
-            GlobalVariable.Instance.mouseX = buffer1;
-            GlobalVariable.Instance.mouseY = buffer2;
-            while (SDL_PollEvent(out GlobalVariable.Instance.ev) != 0)
-            {
-                switch (GlobalVariable.Instance.ev.type)
-                {
-                    case SDL_EventType.SDL_QUIT:
-                        return true;
-                        break;
-                    case SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                        GlobalVariable.Instance.mouseButtonClick = 1;
-                        break;
-                    case SDL_EventType.SDL_MOUSEBUTTONUP:
-                        GlobalVariable.Instance.mouseButtonClick = 0;
-                        break;
-                    case SDL_EventType.SDL_KEYDOWN:
-                        GlobalVariable.Instance.GetKey(SDL_Keycode.SDLK_ESCAPE);
-                        break;
-                        break;
-                }
-            }
 
-            return false;
-        }
+
     }
-
 }

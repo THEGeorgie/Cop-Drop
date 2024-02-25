@@ -18,7 +18,7 @@ namespace CopDrop
     {
         void start();
         void update();
-        void loadPlayer(Texture texture);
+        void loadPlayer(Player player);
     }
 }
 
