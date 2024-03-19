@@ -2,7 +2,7 @@ namespace CopDrop
 {
     public class Texture
     {
-        // All of the struct nedded for a texture
+        // All of the structs nedded for a texture
 
         // Used for transforming the whole texture
         public SDL_Rect transform;
@@ -20,6 +20,8 @@ namespace CopDrop
         public SDL_Point point;
 
         private IntPtr surface;
+
+        public bool flip;
 
         // Initalizing all of the structs/variable that are passed from the constructor
         public Texture(IntPtr surface, int textureWidth, int textureHeight, int rotation)
@@ -68,7 +70,15 @@ namespace CopDrop
 
         public void show()
         {
-            SDL_RenderCopyEx(GlobalVariable.Instance.renderer, texture, ref transformSurface, ref transform, rotation, ref point, SDL_RendererFlip.SDL_FLIP_NONE);
+            if (flip)
+            {
+                SDL_RenderCopyEx(GlobalVariable.Instance.renderer, texture, ref transformSurface, ref transform, rotation, ref point, SDL_RendererFlip.SDL_FLIP_HORIZONTAL);
+            }
+            else
+            {
+                SDL_RenderCopyEx(GlobalVariable.Instance.renderer, texture, ref transformSurface, ref transform, rotation, ref point, SDL_RendererFlip.SDL_FLIP_NONE);
+            }
+            
         }
 
         public Texture deepCopy()

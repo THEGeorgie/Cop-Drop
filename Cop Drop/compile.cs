@@ -1,3 +1,4 @@
+using System.Numerics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -22,12 +23,11 @@ namespace CopDrop
         }
         public ScriptCompiler(string CSpath)
         {
-            linkScriptPath = "D:/Projects/Projects/Cop-Drop/Cop Drop/linkScripts.cs";
-            if (File.Exists(CSpath) && File.Exists(linkScriptPath))
+            Console.WriteLine("ScriptCompiler started");
+            if (File.Exists(CSpath))
             {
 
                 code = File.ReadAllText(CSpath);
-                codeScriptLink = File.ReadAllText(linkScriptPath);
                 dllName = Path.GetFileName(CSpath).Remove(Path.GetFileName(CSpath).Length - 3);
                 dllPath = "scripts/dlls/" + dllName + ".dll";
                 if (File.Exists(dllPath))
@@ -56,6 +56,11 @@ namespace CopDrop
             // Define compilation options
             CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
 
+            if (GetMetadataReferences() == null)
+            {
+                Console.WriteLine("The refrences are bad");
+            }
+            
             // Define the compilation
 
             CSharpCompilation compilation = CSharpCompilation.Create(
@@ -90,13 +95,16 @@ namespace CopDrop
             var references = new List<MetadataReference>();
 
             // Add references to required assemblies
+            references.Add(MetadataReference.CreateFromFile("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/8.0.2/System.Runtime.dll"));
             references.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
+            Console.WriteLine(typeof(object).Assembly.Location);
             references.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(Vector).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/8.0.2/System.Numerics.Vectors.dll"));
+
+            Console.WriteLine(typeof(Vector).Assembly.Location);
             references.Add(MetadataReference.CreateFromFile("Cop Drop.dll"));
-            //references.Add(MetadataReference.CreateFromFile("SDL2.dll"));
-            //references.Add(MetadataReference.CreateFromFile("Sayers.SDL2.Core.dll"));
-            references.Add(MetadataReference.CreateFromFile("C:/Program Files (x86)/dotnet/shared/Microsoft.NETCore.App/7.0.12/System.Runtime.dll"));
-            references.Add(MetadataReference.CreateFromFile("C:/Program Files (x86)/dotnet/shared/Microsoft.NETCore.App/7.0.12/System.Numerics.Vectors.dll"));
+        
             return references.ToArray();
         }
 

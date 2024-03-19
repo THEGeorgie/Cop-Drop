@@ -8,11 +8,11 @@ namespace CopDrop
         void loadButton(Button btn);
     }
 
-    public interface IlinkTextureScripts
+    public interface IlinkSpriteScripts
     {
         void start();
         void update();
-        void loadTexture(Texture texture);
+        void loadSprite(Sprite sprite);
     }
     public interface IlinkPlayerScripts
     {

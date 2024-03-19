@@ -84,10 +84,6 @@ namespace CopDrop
         {
 
         }
-        public void setCustomScript()
-        {
-
-        }
         public void showText()
         {
             if (text != null)

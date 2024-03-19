@@ -9,13 +9,14 @@ namespace CopDrop
     {
         int MAP_WIDTH;
         int MAP_HEIGHT;
-        List<Texture> spriteObjects = new List<Texture>();
+        List<Sprite> spriteObjects = new List<Sprite>();
         List<Button> btnObjects = new List<Button>();
         List<IntPtr> surfaces = new List<IntPtr>();
         List<Text> textObjects = new List<Text>();
         List<Player> playerObjects = new List<Player>();
         JArray json;
         JObject miscellaneous;
+        Collision collision;
 
         //Reads the provided json then builds the map
         public Map(string jsonPath)
@@ -24,12 +25,12 @@ namespace CopDrop
             {
                 // Read the JSON file
                 string jsonContent = File.ReadAllText(jsonPath);
-
+                Console.WriteLine("The file exist");
                 // Parse the JSON content as a dynamic object
                 json = JArray.Parse(jsonContent);
                 // objects used  in general (background color assets to use etc.)
                 miscellaneous = (JObject)json[0];
-
+                collision = new Collision();
                 mapBuilder();
             }
             else
@@ -126,15 +127,37 @@ namespace CopDrop
                             {
                                 // 1 means its a texture object 
                                 case 1.0:
-                                    if ((char)objects["alignOn"] == 'x')
+                                    if ((string)objects["script"] != null)
                                     {
-                                        spriteObjects.Add(new Texture(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"]));
+                                        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                                        if ((char)objects["alignOn"] == 'x')
+                                        {
+                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                        }
+                                        else if ((char)objects["alignOn"] == 'y')
+                                        {
+                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if ((char)objects["alignOn"] == 'x')
+                                        {
+                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], null));
 
+                                        }
+                                        else if ((char)objects["alignOn"] == 'y')
+                                        {
+                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], null));
+                                        }
                                     }
-                                    else if ((char)objects["alignOn"] == 'y')
+                                    if ((bool)objects["collision"])
                                     {
-                                        spriteObjects.Add(new Texture(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"]));
+                                        spriteObjects[spriteObjects.Count-1].CollsionID = collision.addCollisionBox(new SDL_Rect{x = 0, y =0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"]}, (bool)objects["debug"]);
+                                        spriteObjects[spriteObjects.Count - 1].collision = collision;
+                                        
                                     }
+                                    
                                     spriteObjects[count].transform.x = (int)objects["x"];
                                     spriteObjects[count].transform.y = (int)objects["y"];
                                     break;
@@ -194,7 +217,6 @@ namespace CopDrop
                                     break;
                                 // means its a player object
                                 case 4.0:
-                                    Console.WriteLine("There is ap lyer object ");
                                     if ((string)objects["script"] != null)
                                     {
                                         ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
@@ -204,6 +226,12 @@ namespace CopDrop
                                     {
                                         playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null));
                                     }
+                                    if ((bool)objects["collision"])
+                                    {
+                                        playerObjects[playerObjects.Count-1].CollisionID = collision.addCollisionBox(new SDL_Rect{x = 0, y =0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"]}, (bool)objects["debug"]);
+                                        playerObjects[playerObjects.Count - 1].collision = collision;
+                                    }
+                                    
                                     break;
                                 default:
                                     break;
@@ -282,14 +310,14 @@ namespace CopDrop
             }
             if (!typeof(CopDrop.IlinkPlayerScripts)!.IsAssignableFrom(type))
             {
-                throw new InvalidOperationException("Class does not implement IlinkButtonScripts interface.");
+                throw new InvalidOperationException("Class does not implement IlinkPlayerScripts interface.");
             }
 
             return (IlinkPlayerScripts)Activator.CreateInstance(type);
 
         }
 
-        private static IlinkTextureScripts loadScriptTEX(string assemblyPath, string className)
+        private static IlinkSpriteScripts loadScriptSPR(string assemblyPath, string className)
         {
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
             //diagnostics
@@ -306,12 +334,12 @@ namespace CopDrop
             {
                 throw new InvalidOperationException("Class not found in the specified assembly.");
             }
-            if (!typeof(CopDrop.IlinkTextureScripts)!.IsAssignableFrom(type))
+            if (!typeof(CopDrop.IlinkSpriteScripts)!.IsAssignableFrom(type))
             {
-                throw new InvalidOperationException("Class does not implement IlinkButtonScripts interface.");
+                throw new InvalidOperationException("Class does not implement IlinkSpriteScripts interface.");
             }
 
-            return (IlinkTextureScripts)Activator.CreateInstance(type);
+            return (IlinkSpriteScripts)Activator.CreateInstance(type);
 
         }
 
@@ -332,6 +360,12 @@ namespace CopDrop
             {
                 playerObjects[i].update();
             }
+            for (int i = 0; i < spriteObjects.Count; i++)
+            {
+                spriteObjects[i].update();
+            }
+
+            collision.update();
         }
         public void discrad()
         {
@@ -376,6 +410,8 @@ namespace CopDrop
 
             SDL_SetRenderDrawColor(GlobalVariable.Instance.renderer, (byte)backgroundColor[0], (byte)backgroundColor[1], (byte)backgroundColor[2], (byte)backgroundColor[3]);
 
+            collision.render();
+            
             if (spriteObjects != null)
             {
                 for (int i = 0; i < spriteObjects.Count; i++)

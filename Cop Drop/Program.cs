@@ -64,7 +64,7 @@ namespace CopDrop
             mouseX = 42;
             mouseY = 42;
             mouseButtonClick = 0;
-            font = TTF_OpenFont("font.otf", 13);
+            font = TTF_OpenFont("m6x11.ttf", 13);
             if (font == null)
             {
                 Console.WriteLine("Failed to load font: %s", SDL_GetError());
