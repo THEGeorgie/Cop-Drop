@@ -1,2 +1,2 @@
 # Cop Drop
-A sneaker simulator where you collect sell and grow your collection.
+A 2d game engine made from scratch using SDL2 
