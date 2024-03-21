@@ -12,38 +12,54 @@
 
         private SDL_Rect rect1;
         private SDL_Rect rect2;
-        private SDL_Rect rect3;
         public void update()
         {
-            
         }
 
         public void render()
         {
             
-           
-
-            
         }
         
-        public bool isCollision(int indexColliosn)
+        public bool isCollision(int indexColliosn, out float overlapX,out float overlapY)
         {
             for (int i = 0; i < collisionBox.Count; i++)
             {
                 
-                    rect1 = collisionBox[i];
-                    rect2 = collisionBox[indexColliosn];
-                    if (SDL_IntersectRect( ref rect1, ref rect2, out _) == SDL_bool.SDL_TRUE && i != indexColliosn)
+                    rect2 = collisionBox[i];
+                    rect1 = collisionBox[indexColliosn];
+                    if (SDL_HasIntersection( ref rect1, ref rect2) == SDL_bool.SDL_TRUE && i != indexColliosn)
                     {
-                        return true;
+                        int rect1CenterX = rect1.x + rect1.w / 2;
+                        int rect1CenterY = rect1.y + rect1.h / 2;
+                        int rect2CenterX = rect2.x + rect2.w / 2;
+                        int rect2CenterY = rect2.y + rect2.h / 2;   
+                        
+                        int dx = rect1CenterX - rect2CenterX;
+                        int dy = rect1CenterY - rect2CenterY;
+                        int penetration = Math.Max(Math.Abs(dx), Math.Abs(dy));
+                        if (penetration != 0)
+                        {
+                            overlapX = dx * (rect1.w / 2 + rect2.w / 2 - penetration) / penetration;
+                            overlapY = dy * (rect1.h / 2 + rect2.h / 2 - penetration) / penetration;
+                            return true;
+                        }
+                         
                     }
-                
-                
+                    
             }
+
+            overlapX = 0;
+            overlapY = 0;
 
             return false;
         }
 
+        public float[] getColliosonBoxValue(int collisionBoxID)
+        {
+            float[] ret = {collisionBox[collisionBoxID].x,collisionBox[collisionBoxID].y,collisionBox[collisionBoxID].w,collisionBox[collisionBoxID].h};
+            return ret;
+        }
         public void setCollisionBoxValue(int collisonBoxID,int x, int y, int w, int h)
         {
             collisionBox[collisonBoxID] = collisionBox[collisonBoxID] with {x = x, y = y, w = w, h = h};

@@ -132,28 +132,28 @@ namespace CopDrop
                                         ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
                                         if ((char)objects["alignOn"] == 'x')
                                         {
-                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
                                         }
                                         else if ((char)objects["alignOn"] == 'y')
                                         {
-                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
                                         }
                                     }
                                     else
                                     {
                                         if ((char)objects["alignOn"] == 'x')
                                         {
-                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], null));
+                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], null, collision));
 
                                         }
                                         else if ((char)objects["alignOn"] == 'y')
                                         {
-                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], null));
+                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], null, collision));
                                         }
                                     }
                                     if ((bool)objects["collision"])
                                     {
-                                        spriteObjects[spriteObjects.Count-1].CollsionID = collision.addCollisionBox(new SDL_Rect{x = 0, y =0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"]}, (bool)objects["debug"]);
+                                        spriteObjects[spriteObjects.Count-1].CollisionID = collision.addCollisionBox(new SDL_Rect{x = 0, y =0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"]}, (bool)objects["debug"]);
                                         spriteObjects[spriteObjects.Count - 1].collision = collision;
                                         
                                     }
@@ -220,11 +220,11 @@ namespace CopDrop
                                     if ((string)objects["script"] != null)
                                     {
                                         ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptPLA(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+                                        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptPLA(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
                                     }
                                     else
                                     {
-                                        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null));
+                                        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null, collision));
                                     }
                                     if ((bool)objects["collision"])
                                     {

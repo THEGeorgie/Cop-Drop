@@ -3,10 +3,10 @@ namespace CopDrop
     public class Sprite:Texture
     {
         protected IlinkSpriteScripts customScript;
-        private int collsionID;
+        private int collisionID;
         public Collision collision;
 
-        public Sprite(IntPtr surface, int textureWidth, int textureHeight, int rotation, IlinkSpriteScripts customScript):base( surface,  textureWidth,  textureHeight,  rotation)
+        public Sprite(IntPtr surface, int textureWidth, int textureHeight, int rotation, IlinkSpriteScripts customScript, Collision collision):base( surface,  textureWidth,  textureHeight,  rotation)
         {
             if (customScript != null)
             {
@@ -14,17 +14,20 @@ namespace CopDrop
                 this.customScript.loadSprite(this);
                 this.customScript.start();
             }
-            
+
+            this.collision = collision;
+
         }
-        public int CollsionID
+        public int CollisionID
         {
-            get => collsionID;
+            get => collisionID;
             set
             {
                 
-                collsionID = value;
+                collisionID = value;
                 
             }
+
         }
         public void update()
         {

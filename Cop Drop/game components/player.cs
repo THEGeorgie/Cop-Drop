@@ -8,11 +8,12 @@ namespace CopDrop
         public Vector2 velocity = new Vector2(0, 0);
         private int collisionID;
         public Collision collision;
-        public Player(IntPtr surface, int textureWidth, int textureHeight, int rotation, int x, int y, IlinkPlayerScripts customScript) : base(surface, textureWidth, textureHeight, rotation)
+        public Player(IntPtr surface, int textureWidth, int textureHeight, int rotation, int x, int y, IlinkPlayerScripts customScript,Collision collision) : base(surface, textureWidth, textureHeight, rotation)
         {
             transform.x = x;
             transform.y = y;
             this.customScript = customScript;
+            this.collision = collision;
             if (this.customScript != null)
             {
                 this.customScript.loadPlayer(this);
