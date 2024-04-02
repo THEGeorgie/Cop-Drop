@@ -11,7 +11,6 @@ namespace CopDrop
         private string dllName;
         private string scriptClassName;
         private string dllPath;
-        //The cs file with the interface
         private string linkScriptPath;
         public string DllPath
         {
@@ -97,7 +96,6 @@ namespace CopDrop
             // Add references to required assemblies
             references.Add(MetadataReference.CreateFromFile("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/8.0.2/System.Runtime.dll"));
             references.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
-            Console.WriteLine(typeof(object).Assembly.Location);
             references.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
             references.Add(MetadataReference.CreateFromFile(typeof(Vector).Assembly.Location));
             references.Add(MetadataReference.CreateFromFile("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/8.0.2/System.Numerics.Vectors.dll"));

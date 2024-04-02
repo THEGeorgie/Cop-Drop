@@ -15,7 +15,7 @@ namespace CopDrop
         int WINDOW_HEIGHT;
         IntPtr window;
 
-        //Creates the window and the renderer window titl, icon and loads in a map
+        //Creates the window, renderer, window title, icon and loads in a map
         public Game(int WINDOW_WIDTH, int WINDOW_HEIGHT)
         {
             SDL_Init(SDL_INIT_VIDEO);
@@ -29,11 +29,11 @@ namespace CopDrop
             SDL_SetWindowTitle(window, "Cop Drop");
             SDL_SetWindowIcon(window, surface);
 
-            commandLine.Instance.cli("load_map maps/main_menu_level/main_menu_map.json");
+            commandLine.Instance.cli($"load_map maps/main_menu_level/main_menu_map.json--{WINDOW_WIDTH}--{WINDOW_HEIGHT}");
 
         }
 
-        //every specifed amount of time it clears the screeen and re renders the objects
+        //every specifed amount of time it clears the screeen and re-renders the objects/components
         public void render()
         {
             SDL_RenderClear(GlobalVariable.Instance.renderer);
@@ -60,10 +60,6 @@ namespace CopDrop
             TTF_Quit();
             SDL_Quit();
         }
-
-        // Listens to any input being made
-        //! this method has to be overhalled and depricated
-
 
     }
 }

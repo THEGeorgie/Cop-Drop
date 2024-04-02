@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Cop Drop/bin/Debug/net6.0/Cop Drop.dll",
+            "program": "${workspaceFolder}/Cop Drop/bin/Debug/net8.0/Cop Drop.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Cop Drop",
+            "cwd": "${workspaceFolder}/Cop Drop/bin/Debug/net8.0",
             "console": "internalConsole",
             "stopAtEntry": false
         },

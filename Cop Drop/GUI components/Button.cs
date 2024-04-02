@@ -171,7 +171,6 @@ namespace CopDrop
                 {
                     if (severd[0] == accitonList[i])
                     {
-                        Console.WriteLine(i);
                         if (i == 1)
                         {
                             dAccitons[i](severd[0]);
@@ -185,9 +184,10 @@ namespace CopDrop
             }
 
         }
-        DAccitons LoadMap = (string mapLocation) =>
+        DAccitons LoadMap = (string mapMetaData) =>
         {
-            Map map = new Map(mapLocation);
+            string[] severd = mapMetaData.Split("--");
+            Map map = new Map(severd[0], Convert.ToInt32(severd[1]),Convert.ToInt32(severd[2]));
             try
             {
                 MapManager.Instance.LoadMap(map);

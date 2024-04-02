@@ -4,7 +4,7 @@
     {
         private List<SDL_Rect> collisionBox = new List<SDL_Rect>();
         private List<bool> collisionBoxDebug = new List<bool>();
-        private List<Texture> collsionBOxShow = new List<Texture>();
+        private List<Texture> collsionBoxShow = new List<Texture>();
         public Collision()
         {
             Console.WriteLine("Collision system initelized");

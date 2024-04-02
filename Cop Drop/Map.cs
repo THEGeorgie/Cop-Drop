@@ -17,12 +17,15 @@ namespace CopDrop
         JArray json;
         JObject miscellaneous;
         Collision collision;
+        MapTileManager mapTileManager;
 
         //Reads the provided json then builds the map
-        public Map(string jsonPath)
+        public Map(string jsonPath, int MAP_WIDTH, int MAP_HEIGHT)
         {
             if (File.Exists(jsonPath))
             {
+                this.MAP_WIDTH = MAP_WIDTH;
+                this.MAP_HEIGHT = MAP_HEIGHT;
                 // Read the JSON file
                 string jsonContent = File.ReadAllText(jsonPath);
                 Console.WriteLine("The file exist");
@@ -127,111 +130,26 @@ namespace CopDrop
                             {
                                 // 1 means its a texture object 
                                 case 1.0:
-                                    if ((string)objects["script"] != null)
-                                    {
-                                        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                        if ((char)objects["alignOn"] == 'x')
-                                        {
-                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
-                                        }
-                                        else if ((char)objects["alignOn"] == 'y')
-                                        {
-                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if ((char)objects["alignOn"] == 'x')
-                                        {
-                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], null, collision));
-
-                                        }
-                                        else if ((char)objects["alignOn"] == 'y')
-                                        {
-                                            spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], null, collision));
-                                        }
-                                    }
-                                    if ((bool)objects["collision"])
-                                    {
-                                        spriteObjects[spriteObjects.Count-1].CollisionID = collision.addCollisionBox(new SDL_Rect{x = 0, y =0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"]}, (bool)objects["debug"]);
-                                        spriteObjects[spriteObjects.Count - 1].collision = collision;
-                                        
-                                    }
-                                    
-                                    spriteObjects[count].transform.x = (int)objects["x"];
-                                    spriteObjects[count].transform.y = (int)objects["y"];
+                                    createSprite(objects, destinationSurface, count);
                                     break;
                                 // 2 means its a button object 
                                 case 2.0:
-                                    //There is a convertion from 
-                                    JArray commandList = (JArray)objects["onPress"];
-
-                                    string[] bufferCommands = new string[commandList.Count];
-
-                                    for (int i = 0; i < commandList.Count; i++)
-                                    {
-                                        bufferCommands[i] = (string)commandList[i];
-                                    }
-
-                                    if ((string)objects["script"] != null)
-                                    {
-                                        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                        btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, loadScriptBTN(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
-                                    }
-                                    else
-                                    {
-                                        btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, null));
-                                    }
-
+                                    createButton(objects);
                                     break;
                                 //means its a button with text
                                 case 2.3:
-                                    JArray commandList1 = (JArray)objects["onPress"];
-                                    string[] bufferCommands1 = new string[commandList1.Count];
-
-                                    for (int i = 0; i < commandList1.Count; i++)
-                                    {
-                                        bufferCommands1[i] = (string)commandList1[i];
-                                    }
-
-
-                                    Text txt = new Text((string)objects["text"], (int)objects["fontsize"], textColor);
-
-                                    if ((string)objects["script"] != null)
-                                    {
-                                        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                        btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScriptBTN(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
-                                    }
-                                    else
-                                    {
-                                        btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, null));
-                                    }
+                                    createButtonWithText(objects, textColor);
                                     break;
                                 // means its a text object
                                 case 3.0:
-                                    textObjects.Add(new Text((string)objects["text"], (int)objects["fontsize"], textColor));
-                                    Console.WriteLine(count);
-                                    textObjects[count].x = (int)objects["x"];
-                                    textObjects[count].y = (int)objects["y"];
-                                    textObjects[count].update();
+                                    createText(objects, count, textColor);
                                     break;
                                 // means its a player object
                                 case 4.0:
-                                    if ((string)objects["script"] != null)
-                                    {
-                                        ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                                        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptPLA(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
-                                    }
-                                    else
-                                    {
-                                        playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null, collision));
-                                    }
-                                    if ((bool)objects["collision"])
-                                    {
-                                        playerObjects[playerObjects.Count-1].CollisionID = collision.addCollisionBox(new SDL_Rect{x = 0, y =0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"]}, (bool)objects["debug"]);
-                                        playerObjects[playerObjects.Count - 1].collision = collision;
-                                    }
-                                    
+                                    createPlayer(objects);
+                                    break;
+                                case 5.0:
+                                    createTileMap(objects, count);
                                     break;
                                 default:
                                     break;
@@ -246,6 +164,164 @@ namespace CopDrop
             {
                 Console.WriteLine("An error occurred while building the map. Most likely, it's a JSON problem.");
                 throw;
+            }
+        }
+        void createSprite(JToken objects, nint destinationSurface, int count)
+        {
+            if ((string)objects["script"] != null)
+            {
+                ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                if ((char)objects["alignOn"] == 'x')
+                {
+                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
+                }
+                else if ((char)objects["alignOn"] == 'y')
+                {
+                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
+                }
+            }
+            else
+            {
+                if ((char)objects["alignOn"] == 'x')
+                {
+                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], null, collision));
+
+                }
+                else if ((char)objects["alignOn"] == 'y')
+                {
+                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], null, collision));
+                }
+            }
+            if ((bool)objects["collision"])
+            {
+                spriteObjects[spriteObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = 0, y = 0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"] }, (bool)objects["debug"]);
+                spriteObjects[spriteObjects.Count - 1].collision = collision;
+
+            }
+
+            spriteObjects[count].transform.x = (int)objects["x"];
+            spriteObjects[count].transform.y = (int)objects["y"];
+        }
+        void createSprite(JToken objects, int width, int height, int x, int y, int count)
+        {
+            if ((string)objects["script"] != null)
+            {
+                ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                spriteObjects.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
+            }
+            else
+            {
+                spriteObjects.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], null, collision));
+            }
+            if ((bool)objects["collision"])
+            {
+                spriteObjects[spriteObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = 0, y = 0, w = width, h = height }, (bool)objects["debug"]);
+                spriteObjects[spriteObjects.Count - 1].collision = collision;
+            }
+            spriteObjects[count].transform.x = x;
+            spriteObjects[count].transform.y = y;
+        }
+        void createButton(JToken objects)
+        {
+            //There is a convertion from 
+            JArray commandList = (JArray)objects["onPress"];
+
+            string[] bufferCommands = new string[commandList.Count];
+
+            for (int i = 0; i < commandList.Count; i++)
+            {
+                bufferCommands[i] = (string)commandList[i];
+            }
+
+            if ((string)objects["script"] != null)
+            {
+                ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, loadScriptBTN(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+            }
+            else
+            {
+                btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], bufferCommands, null));
+            }
+
+        }
+        void createButtonWithText(JToken objects, SDL_Color textColor)
+        {
+            JArray commandList1 = (JArray)objects["onPress"];
+            string[] bufferCommands1 = new string[commandList1.Count];
+
+            for (int i = 0; i < commandList1.Count; i++)
+            {
+                bufferCommands1[i] = (string)commandList1[i];
+            }
+
+
+            Text txt = new Text((string)objects["text"], (int)objects["fontsize"], textColor);
+
+            if ((string)objects["script"] != null)
+            {
+                ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, loadScriptBTN(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+            }
+            else
+            {
+                btnObjects.Add(new Button(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], txt, (int)objects["textX"], (int)objects["textY"], (int)objects["x"], (int)objects["y"], bufferCommands1, null));
+            }
+        }
+        void createText(JToken objects, int count, SDL_Color textColor)
+        {
+            textObjects.Add(new Text((string)objects["text"], (int)objects["fontsize"], textColor));
+            textObjects[count].x = (int)objects["x"];
+            textObjects[count].y = (int)objects["y"];
+            textObjects[count].update();
+        }
+        void createPlayer(JToken objects)
+        {
+            if ((string)objects["script"] != null)
+            {
+                ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptPLA(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
+            }
+            else
+            {
+                playerObjects.Add(new Player(surfaces[(int)objects["surfaceIndex"]], (int)objects["w"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null, collision));
+            }
+            if ((bool)objects["collision"])
+            {
+                playerObjects[playerObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = 0, y = 0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"] }, (bool)objects["debug"]);
+                playerObjects[playerObjects.Count - 1].collision = collision;
+            }
+        }
+        void createTileMap(JToken objects, int count)
+        {
+            JArray tileMap = (JArray)objects["TileMap"];
+            JArray tiles = (JArray)objects["Tiles"];
+            int width = 30; //(int)(MAP_WIDTH / (int)tileMap.Count);
+            int height = 30; //(int)(MAP_HEIGHT / (int)tileMap.Count);
+            Console.WriteLine($"Tile width/height is: {width}/{height}");
+            int x, y;
+            for (int i = 0; i < tileMap.Count; i++)
+            {
+                JArray innerArray = (JArray)tileMap[i];
+                for (int j = 0; j < innerArray.Count; j++)
+                {
+                    JToken obj = innerArray[j];
+                    x = i * width;
+                    y = j * height;
+                    Console.WriteLine($"Tile x/y is: {x}/{y}");
+
+                    createTile(tiles, (int)innerArray[i], width, height, x, y, count);
+                }
+            }
+        }
+        void createTile(JArray tiles, int type, int width, int height, int x, int y, int count)
+        {
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                JToken tile = tiles[i];
+                if ((int)tile["Description"] == type)
+                {
+                    createSprite(tile, width, height, x, y, count);
+                }
             }
         }
         void DeleteDllFiles(string folderPath)
@@ -411,7 +487,7 @@ namespace CopDrop
             SDL_SetRenderDrawColor(GlobalVariable.Instance.renderer, (byte)backgroundColor[0], (byte)backgroundColor[1], (byte)backgroundColor[2], (byte)backgroundColor[3]);
 
             collision.render();
-            
+
             if (spriteObjects != null)
             {
                 for (int i = 0; i < spriteObjects.Count; i++)
