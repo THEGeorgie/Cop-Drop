@@ -11,8 +11,7 @@ namespace CopDrop
 
     class Game
     {
-        int WINDOW_WIDTH;
-        int WINDOW_HEIGHT;
+
         IntPtr window;
 
         //Creates the window, renderer, window title, icon and loads in a map
@@ -21,11 +20,11 @@ namespace CopDrop
             SDL_Init(SDL_INIT_VIDEO);
             TTF_Init();
 
-            this.WINDOW_HEIGHT = WINDOW_HEIGHT;
-            this.WINDOW_WIDTH = WINDOW_WIDTH;
+            GlobalVariable.Instance.WINDOW_HEIGHT = WINDOW_HEIGHT;
+            GlobalVariable.Instance.WINDOW_WIDTH = WINDOW_WIDTH;
             var surface = SDL_image.IMG_Load("maps/main_level/assets/stockXIcon.png");
             SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WindowFlags.SDL_WINDOW_SHOWN, out window, out GlobalVariable.Instance.renderer);
-            SDL.SDL_RenderSetLogicalSize(GlobalVariable.Instance.renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
+            //SDL.SDL_RenderSetLogicalSize(GlobalVariable.Instance.renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
             SDL_SetWindowTitle(window, "Cop Drop");
             SDL_SetWindowIcon(window, surface);
 

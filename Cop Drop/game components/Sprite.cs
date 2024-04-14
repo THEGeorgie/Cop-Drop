@@ -18,6 +18,19 @@ namespace CopDrop
             this.collision = collision;
 
         }
+        public Sprite(IntPtr surface, int textureWidth, int textureHeight, int rotation,int x, int y, IlinkSpriteScripts customScript, Collision collision):base( surface,  textureWidth,  textureHeight,  rotation)
+        {
+            if (customScript != null)
+            {
+                this.customScript = customScript;
+                this.customScript.loadSprite(this);
+                this.customScript.start();
+            }
+            transform.x = x;
+            transform.y = y;
+            this.collision = collision;
+
+        }
         public int CollisionID
         {
             get => collisionID;

@@ -202,24 +202,26 @@ namespace CopDrop
             spriteObjects[count].transform.x = (int)objects["x"];
             spriteObjects[count].transform.y = (int)objects["y"];
         }
-        void createSprite(JToken objects, int width, int height, int x, int y, int count)
+        void createSprite(JToken objects, int width, int height, int x, int y,int surfaceWidth, int surfaceHeight,int surfaceX, int surfaceY, int count)
         {
             if ((string)objects["script"] != null)
             {
                 ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                spriteObjects.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
+                spriteObjects.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], x, y, loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
             }
             else
             {
-                spriteObjects.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], null, collision));
+                spriteObjects.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], x, y, null, collision));
             }
             if ((bool)objects["collision"])
             {
-                spriteObjects[spriteObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = 0, y = 0, w = width, h = height }, (bool)objects["debug"]);
+                spriteObjects[spriteObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = x, y = y, w = width, h = height }, (bool)objects["debug"]);
                 spriteObjects[spriteObjects.Count - 1].collision = collision;
             }
-            spriteObjects[count].transform.x = x;
-            spriteObjects[count].transform.y = y;
+            spriteObjects[spriteObjects.Count -1].transformSurface.w = surfaceWidth;
+            spriteObjects[spriteObjects.Count -1].transformSurface.h = surfaceHeight;
+            spriteObjects[spriteObjects.Count -1].transformSurface.x = surfaceX;
+            spriteObjects[spriteObjects.Count -1].transformSurface.y = surfaceY;
         }
         void createButton(JToken objects)
         {
@@ -295,21 +297,29 @@ namespace CopDrop
         {
             JArray tileMap = (JArray)objects["TileMap"];
             JArray tiles = (JArray)objects["Tiles"];
-            int width = 30; //(int)(MAP_WIDTH / (int)tileMap.Count);
-            int height = 30; //(int)(MAP_HEIGHT / (int)tileMap.Count);
-            Console.WriteLine($"Tile width/height is: {width}/{height}");
-            int x, y;
-            for (int i = 0; i < tileMap.Count; i++)
-            {
-                JArray innerArray = (JArray)tileMap[i];
-                for (int j = 0; j < innerArray.Count; j++)
-                {
-                    JToken obj = innerArray[j];
-                    x = i * width;
-                    y = j * height;
-                    Console.WriteLine($"Tile x/y is: {x}/{y}");
+            int[,] map = {
+                {1,5,5,5,5,5,5,5,5,5,7},
+                {5,5,5,5,5,5,5,5,5,5,5},
+                {5,5,5,5,5,5,5,5,5,5,5},
+                {5,5,5,5,5,5,5,5,5,5,5},
+                {5,5,5,5,5,5,5,5,5,5,5},
+                {5,5,5,5,5,5,5,5,5,5,5}
+            };
 
-                    createTile(tiles, (int)innerArray[i], width, height, x, y, count);
+            int width = 32; //= (int)(MAP_WIDTH / (int) map.GetLength(0));
+            int height = 32; //(int)(MAP_HEIGHT / (int)map.GetLength(1));
+            int x, y;
+            
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+
+                    x = j * width;
+                    y = i * height;
+
+                    createTile(tiles, map[i, j], width, height, x, y, count);
+                    Console.Write($"TILE IS {map[i,j]}");
                 }
             }
         }
@@ -320,7 +330,8 @@ namespace CopDrop
                 JToken tile = tiles[i];
                 if ((int)tile["Description"] == type)
                 {
-                    createSprite(tile, width, height, x, y, count);
+                    Console.WriteLine($"Create tile x/y {x}/{y}");
+                    createSprite(tile, width, height, x, y,(int)tile["sourceW"],(int)tile["sourceH"],(int)tile["sourceW"] * (int)tile["sourceX"],(int)tile["sourceH"] * (int)tile["sourceY"], count);
                 }
             }
         }

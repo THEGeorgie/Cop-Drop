@@ -43,6 +43,8 @@ namespace CopDrop
         private static GlobalVariable instance;
         public int mouseX { get; set; }
         public int mouseY { get; set; }
+        public int WINDOW_WIDTH { get; set; }
+        public int WINDOW_HEIGHT { get; set; }
         public int mouseButtonClick { get; set; }
         public IntPtr font;
         public IntPtr renderer;
