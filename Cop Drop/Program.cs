@@ -6,7 +6,7 @@ namespace CopDrop
         public static int Main()
         {
 
-            const int FPS = 60;
+            const int FPS = 15;
             const int frameDelay = 1000 / FPS;
 
             UInt32 frameStart;
@@ -41,6 +41,8 @@ namespace CopDrop
     public class GlobalVariable
     {
         private static GlobalVariable instance;
+
+        public int score {get; set;}
         public int mouseX { get; set; }
         public int mouseY { get; set; }
         public int WINDOW_WIDTH { get; set; }

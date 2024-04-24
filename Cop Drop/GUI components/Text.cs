@@ -24,6 +24,7 @@ namespace CopDrop
             rotation = 0;
             texture = new Texture(surface, rotation);
             SDL_FreeSurface(surface);
+
         }
         public void render()
         {
@@ -40,6 +41,7 @@ namespace CopDrop
             texture.transform.y = y;
             texture.rotation = rotation;
         }
+        //! not to used in a update method or if needer be cautious
         public void updateText(string txt)
         {
             surface = TTF_RenderText_Solid(GlobalVariable.Instance.font, txt, fg);

@@ -10,14 +10,17 @@ namespace CopDrop
         int MAP_WIDTH;
         int MAP_HEIGHT;
         List<Sprite> spriteObjects = new List<Sprite>();
+        List<Sprite> tile = new List<Sprite>();
         List<Button> btnObjects = new List<Button>();
         List<IntPtr> surfaces = new List<IntPtr>();
-        List<Text> textObjects = new List<Text>();
+        List<TextWrapper> textObjects = new List<TextWrapper>();
         List<Player> playerObjects = new List<Player>();
         JArray json;
         JObject miscellaneous;
         Collision collision;
         MapTileManager mapTileManager;
+
+        JArray backgroundColor;
 
         //Reads the provided json then builds the map
         public Map(string jsonPath, int MAP_WIDTH, int MAP_HEIGHT)
@@ -43,6 +46,77 @@ namespace CopDrop
             }
         }
 
+        void addComponent(double type, JToken data)
+        {
+            SDL_Rect sourceRect = new SDL_Rect();
+            SDL_Rect destinationRect = new SDL_Rect();
+            SDL_Color textColor = new SDL_Color();
+            switch (type)
+            {
+                case 1.0:
+                    var destinationSurface = IntPtr.Zero;
+                    // menas if it has multiple surfaces in one row it combines it into one texture
+                    if ((char)data["alignOn"] == 'x')
+                    {
+                        // creates the surface where we will copy the images to 
+                        destinationSurface = SDL.SDL_CreateRGBSurface(0, (int)data["w"] * (int)data["quantity"], (int)data["h"], 32, 0, 0, 0, 0);
+                    }
+                    else if ((char)data["alignOn"] == 'y')
+                    {
+                        // creates the surface where we will copy the images to 
+                        destinationSurface = SDL.SDL_CreateRGBSurface(0, (int)data["w"], (int)data["h"] * (int)data["quantity"], 32, 0, 0, 0, 0);
+                    }
+                    uint color = SDL.SDL_MapRGB(SDL.SDL_AllocFormat(SDL.SDL_PIXELFORMAT_ARGB8888), (byte)backgroundColor[0], (byte)backgroundColor[0], (byte)backgroundColor[0]);
+
+                    SDL.SDL_FillRect(destinationSurface, IntPtr.Zero, color);
+                    SDL_Surface surfaceInfo = (SDL.SDL_Surface)System.Runtime.InteropServices.Marshal.PtrToStructure(surfaces[(int)data["surfaceIndex"]], typeof(SDL.SDL_Surface));
+
+                    sourceRect.x = (int)data["sourceX"];
+                    sourceRect.y = (int)data["sourceY"];
+                    sourceRect.w = surfaceInfo.w;
+                    sourceRect.h = surfaceInfo.h;
+                    destinationRect.h = (int)data["h"];
+                    destinationRect.w = (int)data["w"];
+
+
+                    for (int i = 0; i < (int)data["quantity"]; i++)
+                    {
+                        if ((char)data["alignOn"] == 'x')
+                        {
+                            destinationRect.x = ((int)data["w"] + (int)data["margin"]) * i;
+                            destinationRect.y = 0;
+                        }
+                        else if ((char)data["alignOn"] == 'y')
+                        {
+                            destinationRect.y = ((int)data["h"] + (int)data["margin"]) * i;
+                            destinationRect.x = 0;
+                        }
+                        //combinig the surfaces
+                        SDL_BlitSurface(surfaces[(int)data["surfaceIndex"]], ref sourceRect, destinationSurface, ref destinationRect);
+
+                    }
+                    createSprite(data, destinationSurface, 1);
+                    break;
+                // 2 means its a button object 
+                case 2.0:
+                    createButton(data);
+                    break;
+                //means its a button with text
+                case 2.3:
+                    createButtonWithText(data, textColor);
+                    break;
+                // means its a text object
+                case 3.0:
+                    createText(data, 1, textColor);
+                    break;
+                // means its a player object
+                case 4.0:
+                    createPlayer(data);
+                    break;
+                default:
+                    break;
+            }
+        }
         void mapBuilder()
         {
             SDL_Rect sourceRect = new SDL_Rect();
@@ -50,7 +124,7 @@ namespace CopDrop
             SDL_Color textColor = new SDL_Color();
 
             JArray locationSurfaces = (JArray)miscellaneous["assetLocation"];
-            JArray backgroundColor = (JArray)miscellaneous["backGroundColor"];
+            backgroundColor = (JArray)miscellaneous["backGroundColor"];
 
             for (int i = 0; i < locationSurfaces.Count; i++)
             {
@@ -194,34 +268,35 @@ namespace CopDrop
             }
             if ((bool)objects["collision"])
             {
-                spriteObjects[spriteObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = 0, y = 0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"] }, (bool)objects["debug"]);
+                spriteObjects[spriteObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = (int)objects["x"], y = (int)objects["y"], w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"] }, (bool)objects["debug"], (char)objects["type"]);
                 spriteObjects[spriteObjects.Count - 1].collision = collision;
 
             }
 
-            spriteObjects[count].transform.x = (int)objects["x"];
-            spriteObjects[count].transform.y = (int)objects["y"];
+            spriteObjects[spriteObjects.Count - 1].transform.x = (int)objects["x"];
+            spriteObjects[spriteObjects.Count - 1].transform.y = (int)objects["y"];
         }
-        void createSprite(JToken objects, int width, int height, int x, int y,int surfaceWidth, int surfaceHeight,int surfaceX, int surfaceY, int count)
+        void createSprite(JToken objects, int width, int height, int x, int y, int surfaceWidth, int surfaceHeight, int surfaceX, int surfaceY, char type, int count)
         {
             if ((string)objects["script"] != null)
             {
                 ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
-                spriteObjects.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], x, y, loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
+                tile.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], x, y, loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
             }
             else
             {
-                spriteObjects.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], x, y, null, collision));
+                tile.Add(new Sprite(surfaces[(int)objects["surfaceIndex"]], width, height, (int)objects["rotation"], x, y, null, collision));
             }
             if ((bool)objects["collision"])
             {
-                spriteObjects[spriteObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = x, y = y, w = width, h = height }, (bool)objects["debug"]);
-                spriteObjects[spriteObjects.Count - 1].collision = collision;
+                tile[tile.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = x, y = y, w = width, h = height }, (bool)objects["debug"], (char)objects["type"]);
+                tile[tile.Count - 1].collision = collision;
+                collision.addCollisionType(tile[tile.Count - 1].CollisionID, type);
             }
-            spriteObjects[spriteObjects.Count -1].transformSurface.w = surfaceWidth;
-            spriteObjects[spriteObjects.Count -1].transformSurface.h = surfaceHeight;
-            spriteObjects[spriteObjects.Count -1].transformSurface.x = surfaceX;
-            spriteObjects[spriteObjects.Count -1].transformSurface.y = surfaceY;
+            tile[tile.Count - 1].transformSurface.w = surfaceWidth;
+            tile[tile.Count - 1].transformSurface.h = surfaceHeight;
+            tile[tile.Count - 1].transformSurface.x = surfaceX;
+            tile[tile.Count - 1].transformSurface.y = surfaceY;
         }
         void createButton(JToken objects)
         {
@@ -271,10 +346,18 @@ namespace CopDrop
         }
         void createText(JToken objects, int count, SDL_Color textColor)
         {
-            textObjects.Add(new Text((string)objects["text"], (int)objects["fontsize"], textColor));
-            textObjects[count].x = (int)objects["x"];
-            textObjects[count].y = (int)objects["y"];
-            textObjects[count].update();
+            if ((string)objects["script"] != null)
+            {
+                ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
+                textObjects.Add(new TextWrapper((string)objects["text"], (int)objects["fontsize"], textColor, loadScriptTXT(scriptCompiler.DllPath, scriptCompiler.ScriptClassName)));
+            }
+            else
+            {
+                textObjects.Add(new TextWrapper((string)objects["text"], (int)objects["fontsize"], textColor, null));
+            }
+            textObjects[textObjects.Count-1].x = (int)objects["x"];
+            textObjects[textObjects.Count-1].y = (int)objects["y"];
+            textObjects[textObjects.Count-1].update();
         }
         void createPlayer(JToken objects)
         {
@@ -289,7 +372,7 @@ namespace CopDrop
             }
             if ((bool)objects["collision"])
             {
-                playerObjects[playerObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = 0, y = 0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"] }, (bool)objects["debug"]);
+                playerObjects[playerObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = 0, y = 0, w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"] }, (bool)objects["debug"], (char)objects["type"]);
                 playerObjects[playerObjects.Count - 1].collision = collision;
             }
         }
@@ -297,19 +380,22 @@ namespace CopDrop
         {
             JArray tileMap = (JArray)objects["TileMap"];
             JArray tiles = (JArray)objects["Tiles"];
-            int[,] map = {
-                {1,5,5,5,5,5,5,5,5,5,7},
-                {5,5,5,5,5,5,5,5,5,5,5},
-                {5,5,5,5,5,5,5,5,5,5,5},
-                {5,5,5,5,5,5,5,5,5,5,5},
-                {5,5,5,5,5,5,5,5,5,5,5},
-                {5,5,5,5,5,5,5,5,5,5,5}
-            };
+            JToken metaData = (JToken)objects["metaData"];
 
-            int width = 32; //= (int)(MAP_WIDTH / (int) map.GetLength(0));
-            int height = 32; //(int)(MAP_HEIGHT / (int)map.GetLength(1));
+            int[,] map = new int[tileMap.Count(), (int)tileMap[0].Count()];
+            for (int i = 0; i < tileMap.Count(); i++)
+            {
+                JArray innerArray = (JArray)tileMap[i];
+                for (int j = 0; j < tileMap[0].Count(); j++)
+                {
+                    map[i, j] = (int)innerArray[j];
+                }
+            }
+
+            int width = (int)metaData["TileWidth"];
+            int height = (int)metaData["TileHeight"];
             int x, y;
-            
+
             for (int i = 0; i < map.GetLength(0); i++)
             {
                 for (int j = 0; j < map.GetLength(1); j++)
@@ -319,10 +405,19 @@ namespace CopDrop
                     y = i * height;
 
                     createTile(tiles, map[i, j], width, height, x, y, count);
-                    Console.Write($"TILE IS {map[i,j]}");
+                    Console.Write($"TILE IS {map[i, j]}");
                 }
             }
         }
+        void updateWorldX(float x)
+        {
+
+        }
+        void updateWorldY(float y)
+        {
+
+        }
+
         void createTile(JArray tiles, int type, int width, int height, int x, int y, int count)
         {
             for (int i = 0; i < tiles.Count; i++)
@@ -331,7 +426,7 @@ namespace CopDrop
                 if ((int)tile["Description"] == type)
                 {
                     Console.WriteLine($"Create tile x/y {x}/{y}");
-                    createSprite(tile, width, height, x, y,(int)tile["sourceW"],(int)tile["sourceH"],(int)tile["sourceW"] * (int)tile["sourceX"],(int)tile["sourceH"] * (int)tile["sourceY"], count);
+                    createSprite(tile, width, height, x, y, (int)tile["sourceW"], (int)tile["sourceH"], (int)tile["sourceW"] * (int)tile["sourceX"], (int)tile["sourceH"] * (int)tile["sourceY"], 'a', count);
                 }
             }
         }
@@ -430,6 +525,32 @@ namespace CopDrop
 
         }
 
+        private static IlinkTextScripts loadScriptTXT(string assemblyPath, string className)
+        {
+            Assembly assembly = Assembly.LoadFrom(assemblyPath);
+            //diagnostics
+            var types = assembly.GetTypes();
+
+            foreach (var item in types)
+            {
+                Console.WriteLine(item);
+            }
+
+            Type type = assembly.GetType("CopDrop." + className);
+
+            if (type == null)
+            {
+                throw new InvalidOperationException("Class not found in the specified assembly.");
+            }
+            if (!typeof(CopDrop.IlinkTextScripts)!.IsAssignableFrom(type))
+            {
+                throw new InvalidOperationException("Class does not implement IlinkTextScripts interface.");
+            }
+
+            return (IlinkTextScripts)Activator.CreateInstance(type);
+
+        }
+
         public void update()
         {
             for (int i = 0; i < btnObjects.Count; i++)
@@ -461,6 +582,13 @@ namespace CopDrop
                 for (int i = 0; i < spriteObjects.Count; i++)
                 {
                     spriteObjects[i].discrad();
+                }
+            }
+            if (tile != null)
+            {
+                for (int i = 0; i < tile.Count; i++)
+                {
+                    tile[i].discrad();
                 }
             }
             if (playerObjects != null)
@@ -504,6 +632,13 @@ namespace CopDrop
                 for (int i = 0; i < spriteObjects.Count; i++)
                 {
                     spriteObjects[i].show();
+                }
+            }
+            if (tile != null)
+            {
+                for (int i = 0; i < tile.Count; i++)
+                {
+                    tile[i].show();
                 }
             }
             if (btnObjects != null)

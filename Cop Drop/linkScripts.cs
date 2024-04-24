@@ -20,6 +20,13 @@ namespace CopDrop
         void update();
         void loadPlayer(Player player);
     }
+
+    public interface IlinkTextScripts
+    {
+        void start();
+        void update();
+        void loadText(TextWrapper text);
+    }
 }
 
 
