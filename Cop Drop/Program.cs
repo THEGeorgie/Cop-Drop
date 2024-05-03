@@ -6,7 +6,7 @@ namespace CopDrop
         public static int Main()
         {
 
-            const int FPS = 15;
+            const int FPS = 5;
             const int frameDelay = 1000 / FPS;
 
             UInt32 frameStart;
@@ -63,7 +63,7 @@ namespace CopDrop
             // Initialize your global variable here
             mouse = new Mouse();
             keybaordEvent = new keybaordEvent();
-
+            score = 0;
 
             mouseX = 42;
             mouseY = 42;

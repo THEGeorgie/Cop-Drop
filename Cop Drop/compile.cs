@@ -99,6 +99,7 @@ namespace CopDrop
             references.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
             references.Add(MetadataReference.CreateFromFile(typeof(Vector).Assembly.Location));
             references.Add(MetadataReference.CreateFromFile("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/8.0.2/System.Numerics.Vectors.dll"));
+            references.Add(MetadataReference.CreateFromFile("/usr/local/share/dotnet/shared/Microsoft.NETCore.App/8.0.2/System.Collections.dll"));
 
             Console.WriteLine(typeof(Vector).Assembly.Location);
             references.Add(MetadataReference.CreateFromFile("Cop Drop.dll"));
@@ -132,4 +133,3 @@ namespace CopDrop
     }
 
 }
-

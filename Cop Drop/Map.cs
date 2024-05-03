@@ -1,5 +1,7 @@
 // json library
 using Newtonsoft.Json.Linq;
+using System.Configuration;
+
 //assembley
 using System.Reflection;
 
@@ -46,8 +48,44 @@ namespace CopDrop
             }
         }
 
-        void addComponent(double type, JToken data)
+        public Sprite getComponent(double type, int index)
         {
+            return spriteObjects[index];
+        }
+
+        public void updateSpritePosition(int index, int x, int y)
+        {
+            if (x != null)
+            {
+                spriteObjects[index].transform.x = x;
+                spriteObjects[index].collision.setCollisionBoxValue(spriteObjects[index].CollisionID, x, 'x');
+            }
+            else
+            {
+                Console.WriteLine("X cannot be null");
+            }
+            if (y != null)
+            {
+                spriteObjects[index].transform.y = y;
+                spriteObjects[index].collision.setCollisionBoxValue(spriteObjects[index].CollisionID, y, 'y');
+            }
+            else
+            {
+                Console.WriteLine("Y cannot be null");
+            }
+
+
+        }
+
+        public int insertComponent(Sprite sprite)
+        {
+            spriteObjects.Add(sprite);
+            return (spriteObjects.Count - 1);
+        }
+        public int addComponent(double type, string datas)
+        {
+            JToken data = JToken.Parse(datas);
+
             SDL_Rect sourceRect = new SDL_Rect();
             SDL_Rect destinationRect = new SDL_Rect();
             SDL_Color textColor = new SDL_Color();
@@ -96,26 +134,33 @@ namespace CopDrop
 
                     }
                     createSprite(data, destinationSurface, 1);
+                    return (spriteObjects.Count - 1);
                     break;
                 // 2 means its a button object 
                 case 2.0:
                     createButton(data);
+                    return (btnObjects.Count - 1);
                     break;
                 //means its a button with text
                 case 2.3:
                     createButtonWithText(data, textColor);
+                    return (btnObjects.Count - 1);
                     break;
                 // means its a text object
                 case 3.0:
                     createText(data, 1, textColor);
+                    return (textObjects.Count - 1);
                     break;
                 // means its a player object
                 case 4.0:
                     createPlayer(data);
+                    return (playerObjects.Count - 1);
                     break;
                 default:
                     break;
             }
+
+            return (int)IntPtr.Zero;
         }
         void mapBuilder()
         {
@@ -247,23 +292,23 @@ namespace CopDrop
                 ScriptCompiler scriptCompiler = new ScriptCompiler((string)objects["script"]);
                 if ((char)objects["alignOn"] == 'x')
                 {
-                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
+                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
                 }
                 else if ((char)objects["alignOn"] == 'y')
                 {
-                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
+                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], loadScriptSPR(scriptCompiler.DllPath, scriptCompiler.ScriptClassName), collision));
                 }
             }
             else
             {
                 if ((char)objects["alignOn"] == 'x')
                 {
-                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], null, collision));
+                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"] * (int)objects["quantity"], (int)objects["h"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null, collision));
 
                 }
                 else if ((char)objects["alignOn"] == 'y')
                 {
-                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], null, collision));
+                    spriteObjects.Add(new Sprite(destinationSurface, (int)objects["w"], (int)objects["h"] * (int)objects["quantity"], (int)objects["rotation"], (int)objects["x"], (int)objects["y"], null, collision));
                 }
             }
             if ((bool)objects["collision"])
@@ -355,9 +400,9 @@ namespace CopDrop
             {
                 textObjects.Add(new TextWrapper((string)objects["text"], (int)objects["fontsize"], textColor, null));
             }
-            textObjects[textObjects.Count-1].x = (int)objects["x"];
-            textObjects[textObjects.Count-1].y = (int)objects["y"];
-            textObjects[textObjects.Count-1].update();
+            textObjects[textObjects.Count - 1].x = (int)objects["x"];
+            textObjects[textObjects.Count - 1].y = (int)objects["y"];
+            textObjects[textObjects.Count - 1].update();
         }
         void createPlayer(JToken objects)
         {
@@ -670,7 +715,7 @@ namespace CopDrop
     public class MapManager
     {
         private List<Map> savedMaps = new List<Map>();
-        Map loadedMap;
+        public Map loadedMap;
         bool isMapSaved;
         public void LoadMap(Map map)
         {
