@@ -96,7 +96,8 @@ namespace CopDrop
         public int addCollisionBox(SDL_Rect collision, bool debug, char type)
         {
             CollisionElements.Add(new CollisionElement(collision, debug, type));
-            return CollisionElements.Count - 1;
+            Console.WriteLine($"Collision system has {CollisionElements.Count}");
+            return CollisionElements.Count -1;
         }
     }
     public class CollisionElement

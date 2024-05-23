@@ -14,11 +14,13 @@ namespace CopDrop
 
         public void update()
         {
+            
             if (customScript != null)
             {
                 customScript.update();
             }
             base.update();
+
         }
     }
 }

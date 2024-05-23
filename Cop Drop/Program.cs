@@ -31,6 +31,7 @@ namespace CopDrop
                     SDL_Delay((uint)(frameDelay - GlobalVariable.Instance.frameTime));
                 }
             }
+            
             game.deallocate();
 
 
@@ -51,6 +52,7 @@ namespace CopDrop
         public IntPtr font;
         public IntPtr renderer;
         public int frameTime;
+        public int deltaTime;
 
         public keybaordEvent keybaordEvent;
 

@@ -315,13 +315,12 @@ namespace CopDrop
             {
                 spriteObjects[spriteObjects.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = (int)objects["x"], y = (int)objects["y"], w = (int)objects["collisionBoxWidth"], h = (int)objects["collisionBoxHeight"] }, (bool)objects["debug"], (char)objects["type"]);
                 spriteObjects[spriteObjects.Count - 1].collision = collision;
-
             }
 
             spriteObjects[spriteObjects.Count - 1].transform.x = (int)objects["x"];
             spriteObjects[spriteObjects.Count - 1].transform.y = (int)objects["y"];
         }
-        void createSprite(JToken objects, int width, int height, int x, int y, int surfaceWidth, int surfaceHeight, int surfaceX, int surfaceY, char type, int count)
+        void createSprite(JToken objects, int width, int height, int x, int y, int surfaceWidth, int surfaceHeight, int surfaceX, int surfaceY, int count)
         {
             if ((string)objects["script"] != null)
             {
@@ -334,9 +333,9 @@ namespace CopDrop
             }
             if ((bool)objects["collision"])
             {
+                Console.WriteLine($"Tile collsion type: {(char)objects["type"]}");
                 tile[tile.Count - 1].CollisionID = collision.addCollisionBox(new SDL_Rect { x = x, y = y, w = width, h = height }, (bool)objects["debug"], (char)objects["type"]);
                 tile[tile.Count - 1].collision = collision;
-                collision.addCollisionType(tile[tile.Count - 1].CollisionID, type);
             }
             tile[tile.Count - 1].transformSurface.w = surfaceWidth;
             tile[tile.Count - 1].transformSurface.h = surfaceHeight;
@@ -471,7 +470,7 @@ namespace CopDrop
                 if ((int)tile["Description"] == type)
                 {
                     Console.WriteLine($"Create tile x/y {x}/{y}");
-                    createSprite(tile, width, height, x, y, (int)tile["sourceW"], (int)tile["sourceH"], (int)tile["sourceW"] * (int)tile["sourceX"], (int)tile["sourceH"] * (int)tile["sourceY"], 'a', count);
+                    createSprite(tile, width, height, x, y, (int)tile["sourceW"], (int)tile["sourceH"], (int)tile["sourceW"] * (int)tile["sourceX"], (int)tile["sourceH"] * (int)tile["sourceY"], count);
                 }
             }
         }
@@ -616,6 +615,10 @@ namespace CopDrop
             for (int i = 0; i < spriteObjects.Count; i++)
             {
                 spriteObjects[i].update();
+            }
+            for (int i = 0; i < textObjects.Count; i++)
+            {
+                textObjects[i].update();
             }
 
             collision.update();
